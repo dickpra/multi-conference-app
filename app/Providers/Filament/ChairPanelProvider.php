@@ -39,6 +39,7 @@ class ChairPanelProvider extends PanelProvider
             // ownershipRelationship: 'conferences'
             )
 
+            //ini untuk menampilkan menu tenant di sidebar
             ->tenantMenu(true)
             ->renderHook('panels::sidebar.nav.start', function () {
                 $t = Filament::getTenant();

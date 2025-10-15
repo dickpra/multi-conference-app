@@ -45,7 +45,7 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
                         ->required(),
                     \Filament\Forms\Components\FileUpload::make('revised_paper_path')
                         ->label('File Revisi (PDF/DOCX)')
-                        ->directory('revised-papers')
+                        ->directory(fn () => 'conferences/' . $this->getRecord()->conference->slug . '/revised-papers')
                         ->required(),
                 ])
                 ->action(function (array $data) {

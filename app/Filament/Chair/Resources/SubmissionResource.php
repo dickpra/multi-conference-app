@@ -24,8 +24,10 @@ use Filament\Infolists\Components\Actions\Action;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Forms\Components\RichEditor; // <-- Import RichEditor
 use Filament\Tables\Columns\ViewColumn;
-
-
+use App\Mail\PaperAcceptedNotification; // <-- Import
+use Illuminate\Support\Facades\Mail; // <-- Import
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Mail\PaperRejectedNotification; // <-- Import
 
 
 
@@ -149,10 +151,24 @@ class SubmissionResource extends Resource
                     ->label('Accept')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
+                    // --- GANTI requiresConfirmation() DENGAN INI ---
                     ->requiresConfirmation()
+                    ->modalHeading('Accept Makalah dan Kirim LoA')
+                    ->modalDescription('Apakah Anda yakin ingin menerima makalah ini? Tindakan ini akan mengirimkan Letter of Acceptance (LoA) secara otomatis kepada penulis.')
+                    ->modalSubmitActionLabel('Ya, Accept dan Kirim')
                     ->action(function (Submission $record) {
+                        // 1. Buat PDF dari view dan simpan ke storage
+                        $pdf = PDF::loadView('pdfs.loa', ['submission' => $record]);
+                        $pdfPath = 'public/loas/loa_' . $record->id . '_' . time() . '.pdf';
+                        \Illuminate\Support\Facades\Storage::put($pdfPath, $pdf->output());
+
+                        // 2. Kirim email ke penulis dengan PDF sebagai lampiran
+                        Mail::to($record->author->email)->send(new PaperAcceptedNotification($record, $pdfPath));
+
+                        // 3. Update status makalah
                         $record->update(['status' => SubmissionStatus::Accepted]);
-                        Notification::make()->title('Makalah telah di-Accept')->success()->send();
+
+                        Notification::make()->title('Makalah telah di-Accept dan LoA telah dikirim ke penulis')->success()->send();
                     })
                     ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
 
@@ -163,11 +179,16 @@ class SubmissionResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->requiresConfirmation()
                     ->action(function (Submission $record) {
+                        // 1. Kirim email notifikasi penolakan beserta komentar reviewer
+                        Mail::to($record->author->email)->send(new PaperRejectedNotification($record));
+
+                        // 2. Update status makalah
                         $record->update(['status' => SubmissionStatus::Rejected]);
-                        Notification::make()->title('Makalah telah di-Reject')->danger()->send();
+
+                        Notification::make()->title('Makalah telah di-Reject dan notifikasi telah dikirim ke penulis')->danger()->send();
                     })
                     ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
-                ])
+                            ])
                 ->schema([
                     TextEntry::make('title'),
                     TextEntry::make('author.name'),

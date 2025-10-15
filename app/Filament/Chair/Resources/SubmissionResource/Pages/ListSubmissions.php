@@ -8,6 +8,10 @@ use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Submission;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Facades\Filament; // <-- 1. Tambahkan import ini
+
 
 class ListSubmissions extends ListRecords
 {
@@ -16,8 +20,38 @@ class ListSubmissions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Tombol "New Submission" tidak kita perlukan di sini
-            // Actions\CreateAction::make(),
+            Actions\Action::make('generate_book')
+                ->label('Cetak Book of Abstracts')
+                ->icon('heroicon-o-book-open')
+                ->color('success')
+                ->requiresConfirmation()
+                ->modalDescription('Sistem akan mengumpulkan semua makalah yang diterima dan menyusunnya menjadi satu file PDF. Proses ini mungkin memakan waktu beberapa saat.')
+                // --- 2. GANTI SELURUH BLOK ACTION INI ---
+                ->action(function () {
+                    // Ambil tenant (konferensi) saat ini menggunakan Facade
+                    $conference = Filament::getTenant();
+
+                    $submissions = Submission::where('conference_id', $conference->id)
+                        ->where('status', SubmissionStatus::Accepted)
+                        ->get();
+                    
+                    if ($submissions->isEmpty()) {
+                        \Filament\Notifications\Notification::make()
+                            ->title('Tidak ada makalah yang diterima untuk dicetak.')
+                            ->warning()
+                            ->send();
+                        return;
+                    }
+
+                    $pdf = PDF::loadView('pdfs.book_of_abstracts', [
+                        'conference' => $conference,
+                        'submissions' => $submissions
+                    ]);
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, 'Book_of_Abstracts_' . $conference->slug . '.pdf');
+                }),
         ];
     }
 

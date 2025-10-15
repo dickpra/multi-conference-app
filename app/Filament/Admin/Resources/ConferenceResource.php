@@ -19,6 +19,8 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\BulkActionGroup; 
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\DeleteBulkAction;   
+// use App\Filament\Admin\Widgets\ConferenceStatsWidget;
+use App\Filament\Admin\Resources\ConferenceResource\Widgets\ConferenceStatsWidget;
 
 class ConferenceResource extends Resource
 {
@@ -55,6 +57,7 @@ class ConferenceResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -77,6 +80,10 @@ class ConferenceResource extends Resource
             'index' => Pages\ListConferences::route('/'),
             'create' => Pages\CreateConference::route('/create'),
             'edit' => Pages\EditConference::route('/{record}/edit'),
+            'view' => Pages\ViewConference::route('/{record}')
+            // ->getHeaderWidgets([
+            //     ConferenceStatsWidget::class,
+            // ]),
         ];
     }
 }

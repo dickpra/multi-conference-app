@@ -65,8 +65,8 @@ class SubmitPaper extends Page implements HasForms
 
                 FileUpload::make('full_paper_path')
                     ->label('Unggah Makalah Lengkap (PDF/DOCX)')
-                    ->directory('full-papers')
-                    ->acceptedFileTypes(['application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/msword'])
+                    // Ganti directory statis dengan closure dinamis
+                    ->directory(fn () => 'conferences/' . $this->conference->slug . '/full-papers')
                     ->required(),
             ])
             ->statePath('data');
