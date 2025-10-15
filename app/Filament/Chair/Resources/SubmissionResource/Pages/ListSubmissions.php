@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\Submission;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Facades\Filament; // <-- 1. Tambahkan import ini
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Storage;
 
 
 class ListSubmissions extends ListRecords
@@ -47,6 +49,22 @@ class ListSubmissions extends ListRecords
                         'conference' => $conference,
                         'submissions' => $submissions
                     ]);
+
+                    // --- LOGIKA PENYIMPANAN YANG DIPERBAIKI ---
+                    // 1. Path sekarang relatif terhadap root disk 'public' (tanpa 'public/')
+                    $filePath = 'conferences/' . $conference->slug . '/books/book_of_abstracts.pdf';
+                    
+                    // 2. Simpan file secara eksplisit ke disk 'public'
+                    Storage::disk('public')->put($filePath, $pdf->output());
+
+                    // 3. Simpan path yang benar ke database
+                    $conference->update(['book_of_abstracts_path' => $filePath]);
+                    // --- AKHIR PERBAIKAN ---
+
+                    Notification::make()
+                        ->title('Book of Abstracts berhasil dibuat dan dipublikasikan!')
+                        ->success()
+                        ->send();
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();

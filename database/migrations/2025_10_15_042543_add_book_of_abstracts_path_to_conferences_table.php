@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('conferences', function (Blueprint $table) {
-            //
+            $table->string('book_of_abstracts_path')->nullable()->after('foreword_title');
         });
     }
 

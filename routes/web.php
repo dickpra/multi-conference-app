@@ -15,6 +15,9 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/conference/{conference:slug}', [PublicController::class, 'show'])->name('conference.show');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PublicController::class, 'index'])->name('home');
+
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
