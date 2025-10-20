@@ -17,6 +17,11 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Reviewer\Pages\Login;
+
+
+
+
 
 class ReviewerPanelProvider extends PanelProvider
 {
@@ -25,7 +30,8 @@ class ReviewerPanelProvider extends PanelProvider
         return $panel
             ->id('reviewer')
             ->path('reviewer')
-            ->login()
+            ->brandName('Multi Conference - Reviewer Dashboard')
+            ->login(Login::class)
             ->authGuard('web')
             ->colors([
                 'primary' => Color::Teal,

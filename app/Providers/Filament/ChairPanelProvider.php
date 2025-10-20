@@ -32,6 +32,7 @@ class ChairPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->brandName('Multi Conference - Chair Dashboard')
             ->id('chair')
             ->path('chair')
             // ->login()

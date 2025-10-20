@@ -50,6 +50,16 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'reviewer' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'author' => [
+            // Jika user login dengan email, maka drivernya email
+            // 'driver' => 'email',
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
         
         // 'api' => [
         //     'driver' => 'token',

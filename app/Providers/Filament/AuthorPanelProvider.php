@@ -27,6 +27,7 @@ class AuthorPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->brandName('Multi Conference - Author Dashboard')
             ->id('author')
             ->path('author')
             ->login(Login::class)

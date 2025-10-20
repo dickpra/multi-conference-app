@@ -6,5 +6,5 @@ enum ConferenceRole: string
 {
     case Chair = 'chair';
     case Reviewer = 'reviewer';
-    case Author = 'author';
+    // case Author = 'author';
 }

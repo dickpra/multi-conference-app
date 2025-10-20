@@ -80,5 +80,10 @@ class User extends Authenticatable implements HasTenants
         return $this->hasMany(Review::class);
     }
 
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
+
 
 }
