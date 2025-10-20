@@ -3,6 +3,7 @@
 namespace App\Filament\Author\Pages;
 
 use App\Models\Conference;
+use Dom\Text;
 use Filament\Actions\Action;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\ImageEntry;
@@ -57,6 +58,8 @@ class ConferenceDetail extends Page implements HasInfolists
                                     ->label('Deskripsi / CFP')
                                     ->html()
                                     ->columnSpanFull(),
+                                TextEntry::make('isbn_issn')
+                                    ->label('ISBN/ISSN'),
                                 TextEntry::make('paper_template_path')
                                     ->label('Unduh Template Paper')
                                     ->icon('heroicon-o-arrow-down-tray')
@@ -72,13 +75,25 @@ class ConferenceDetail extends Page implements HasInfolists
     }
 
     // Tombol Submit Paper
+
     protected function getHeaderActions(): array
     {
         return [
             Action::make('submit')
                 ->label('Submit Paper Sekarang')
                 ->icon('heroicon-o-document-arrow-up')
-                ->url(fn (): string => SubmitPaper::getUrl(['conference' => $this->conference])),
+                ->url(fn (): string => SubmitPaper::getUrl(['conference' => $this->conference]))
+                // --- TAMBAHKAN KONDISI INI ---
+                ->visible(fn (): bool => now()->isBefore($this->conference->end_date)),
         ];
     }
+    // protected function getHeaderActions(): array
+    // {
+    //     return [
+    //         Action::make('submit')
+    //             ->label('Submit Paper Sekarang')
+    //             ->icon('heroicon-o-document-arrow-up')
+    //             ->url(fn (): string => SubmitPaper::getUrl(['conference' => $this->conference])),
+    //     ];
+    // }
 }

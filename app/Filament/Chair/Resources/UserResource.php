@@ -14,7 +14,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use App\Enums\ConferenceRole; 
+use App\Enums\ConferenceRole;
+use Illuminate\Database\Eloquent\Model;
 
 class UserResource extends Resource
 {
@@ -32,6 +33,7 @@ class UserResource extends Resource
 //         return $conference->users()->getQuery()->select('users.*');
 //     }
 
+
     public static function getEloquentQuery(): Builder
     {
         $conference = \Filament\Facades\Filament::getTenant();
@@ -43,6 +45,12 @@ class UserResource extends Resource
             ->select('users.*')                   // tetap aman jika ada kolom ambigu
             ->addSelect("$pivotTable.role as pivot_role") // <-- kunci: alias 'pivot_role'
             ->getQuery();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        // Mencegah user menghapus dirinya sendiri dari conference
+        return false;
     }
 
     public static function canCreate(): bool

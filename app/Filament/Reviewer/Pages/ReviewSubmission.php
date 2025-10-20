@@ -84,56 +84,56 @@ class ReviewSubmission extends Page implements HasInfolists
 
     // Tombol aksi di pojok kanan atas
     protected function getHeaderActions(): array
-{
-    return [
-        // TOMBOL UNTUK FILE ASLI
-        Action::make('download_original_paper')
-            ->label('Unduh File Asli')
-            ->icon('heroicon-o-document-arrow-down')
-            ->color('gray')
-            ->url(fn () => Storage::url($this->submission->full_paper_path))
-            ->openUrlInNewTab(),
+    {
+        return [
+            // TOMBOL UNTUK FILE ASLI
+            Action::make('download_original_paper')
+                ->label('Unduh File Asli')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('gray')
+                ->url(fn () => Storage::url($this->submission->full_paper_path))
+                ->openUrlInNewTab(),
 
-        // TOMBOL UNTUK FILE REVISI (HANYA MUNCUL JIKA ADA)
-        Action::make('download_revised_paper')
-            ->label('Unduh File Revisi')
-            ->icon('heroicon-o-arrow-down-tray')
-            ->color('warning')
-            ->url(fn () => Storage::url($this->submission->revised_paper_path))
-            ->openUrlInNewTab()
-            ->visible(fn (): bool => $this->submission->revised_paper_path !== null),
+            // TOMBOL UNTUK FILE REVISI (HANYA MUNCUL JIKA ADA)
+            Action::make('download_revised_paper')
+                ->label('Unduh File Revisi')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('warning')
+                ->url(fn () => Storage::url($this->submission->revised_paper_path))
+                ->openUrlInNewTab()
+                ->visible(fn (): bool => $this->submission->revised_paper_path !== null),
 
 
-        // Tombol untuk memberi ulasan
-        Action::make('review')
-            ->label('Beri Ulasan')
-            ->icon('heroicon-o-pencil-square')
-            ->form([
-                Radio::make('recommendation')->label('Rekomendasi')->options(Recommendation::class)->required(),
-                RichEditor::make('comments')->label('Komentar')->required(),
-            ])
-            // --- PERBAIKI BAGIAN INI ---
-            // Hapus parameter "Submission $record"
-            ->action(function (array $data) {
-                Review::create([
-                    // Gunakan $this->submission, bukan $record
-                    'submission_id' => $this->submission->id,
-                    'user_id' => auth()->id(),
-                    'recommendation' => $data['recommendation'],
-                    'comments' => $data['comments'],
-                ]);
+            // Tombol untuk memberi ulasan
+            Action::make('review')
+                ->label('Beri Ulasan')
+                ->icon('heroicon-o-pencil-square')
+                ->form([
+                    Radio::make('recommendation')->label('Rekomendasi')->options(Recommendation::class)->required(),
+                    RichEditor::make('comments')->label('Komentar')->required(),
+                ])
+                // --- PERBAIKI BAGIAN INI ---
+                // Hapus parameter "Submission $record"
+                ->action(function (array $data) {
+                    Review::create([
+                        // Gunakan $this->submission, bukan $record
+                        'submission_id' => $this->submission->id,
+                        'user_id' => auth()->id(),
+                        'recommendation' => $data['recommendation'],
+                        'comments' => $data['comments'],
+                    ]);
 
-                 $this->submission->assignedReviewers()->updateExistingPivot(auth()->id(), [
-                    'status' => ReviewStatus::Completed,
-                ]);
-                Notification::make()->title('Ulasan berhasil disimpan')->success()->send();
-                return redirect()->route(static::getRouteName(), ['submission' => $this->submission->id]);
-            })
-            // Tombol hanya tampil jika user BELUM pernah mereview submission ini
-            ->hidden(function (): bool {
-                // Tombol disembunyikan jika user ini sudah pernah memberikan ulasan
-                return $this->submission->reviews()->where('user_id', auth()->id())->exists();
-            }),
-    ];
-}
+                    $this->submission->assignedReviewers()->updateExistingPivot(auth()->id(), [
+                        'status' => ReviewStatus::Completed,
+                    ]);
+                    Notification::make()->title('Ulasan berhasil disimpan')->success()->send();
+                    return redirect()->route(static::getRouteName(), ['submission' => $this->submission->id]);
+                })
+                // Tombol hanya tampil jika user BELUM pernah mereview submission ini
+                ->hidden(function (): bool {
+                    // Tombol disembunyikan jika user ini sudah pernah memberikan ulasan
+                    return $this->submission->reviews()->where('user_id', auth()->id())->exists();
+                }),
+        ];
+    }
 }

@@ -17,6 +17,10 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Author\Pages\EditProfile;
+use App\Filament\Author\Pages\Auth\Register; // <-- Arahkan ke file baru
+use App\Filament\Author\Pages\Login;
+
 
 class AuthorPanelProvider extends PanelProvider
 {
@@ -25,8 +29,8 @@ class AuthorPanelProvider extends PanelProvider
         return $panel
             ->id('author')
             ->path('author')
-            ->login()
-            ->registration()
+            ->login(Login::class)
+            // ->registration(Register::class)
             ->authGuard('web')
             ->colors([
                 'primary' => Color::Sky,

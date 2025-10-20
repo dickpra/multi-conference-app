@@ -10,6 +10,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use App\Filament\Reviewer\Widgets\ReviewerStatsOverview;
+
+
 
 class Dashboard extends Page implements HasTable
 {
@@ -19,6 +22,13 @@ class Dashboard extends Page implements HasTable
     protected static string $view = 'filament.reviewer.pages.dashboard';
     protected static ?string $title = 'Pilih Konferensi';
     protected ?string $subheading = 'Pilih konferensi untuk melihat tugas review Anda.';
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            ReviewerStatsOverview::class,
+        ];
+    }
 
     public function table(Table $table): Table
     {

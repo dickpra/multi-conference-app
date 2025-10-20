@@ -76,7 +76,10 @@
         </form>
 
         <div class="text-center mt-6 text-sm text-gray-600">
-            Belum punya akun? <a href="{{ url(config('filament.panels.assessor.path', '/assessor/register')) }}" class="text-primary hover:underline">Daftar di sini</a>
+            Belum punya akun? <a href="/register" class="text-primary hover:underline">Daftar di sini</a>
+        </div>
+        <div class="text-center mt-4 text-sm">
+            <p>Login sebagai <a href="/author/login" class="text-primary hover:underline">Author</a> atau <a href="/reviewer/login" class="text-primary hover:underline">Reviewer</a>.</p>
         </div>
     </div>
 

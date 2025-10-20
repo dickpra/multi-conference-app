@@ -18,6 +18,12 @@ class ConferenceResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
     protected static ?string $navigationLabel = 'Pilih Konferensi';
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    
     public static function getEloquentQuery(): Builder
     {
         // Tampilkan hanya konferensi di mana user ini adalah seorang Reviewer

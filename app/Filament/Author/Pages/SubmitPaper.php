@@ -32,8 +32,22 @@ class SubmitPaper extends Page implements HasForms
     public Conference $conference;
     public ?array $data = [];
 
+    // public function mount(Conference $conference): void
+    // {
+    //     $this->conference = $conference;
+    //     $this->form->fill();
+    // }
+
     public function mount(Conference $conference): void
     {
+        // --- TAMBAHKAN BLOK PENGECEKAN INI ---
+        if (now()->isAfter($conference->end_date)) {
+            // Jika konferensi sudah berakhir, hentikan proses dan kembali ke dashboard
+            $this->redirect(Dashboard::getUrl());
+            return;
+        }
+        // --- BATAS AKHIR BLOK PENGECEKAN ---
+
         $this->conference = $conference;
         $this->form->fill();
     }

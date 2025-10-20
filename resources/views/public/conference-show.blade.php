@@ -37,7 +37,7 @@
         </div>
     </nav>
 
-    <header class="relative py-20 bg-gray-800 bg-cover bg-center text-white" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{{ $conference->logo ? Illuminate\Support\Facades\Storage::url($conference->logo) : '' }}');">
+    <header class="relative py-20 bg-gray-800 bg-cover bg-center text-white" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{{ $conference->logo ? Illuminate\Support\Facades\Storage::url($conference->logo) : '' }}');">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">{{ $conference->name }}</h1>
             <p class="mt-4 text-lg sm:text-xl text-gray-300">{{ $conference->theme }}</p>
@@ -50,7 +50,7 @@
             <div class="lg:col-span-2 bg-white p-6 sm:p-8 rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold text-gray-900 border-b pb-4 mb-4">Deskripsi & Call for Papers</h2>
                 
-                <div class="flex flex-wrap gap-4 mb-6">
+                {{-- <div class="flex flex-wrap gap-4 mb-6">
                     @if($conference->paper_template_path)
                         <a href="{{ Illuminate\Support\Facades\Storage::url($conference->paper_template_path) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition">
                             <i data-feather="download" class="mr-2 h-5 w-5"></i>Unduh Template
@@ -62,7 +62,7 @@
                             <i data-feather="send" class="mr-2 h-5 w-5"></i>Kirim Paper Sekarang
                         </a>
                     @endif
-                </div>
+                </div> --}}
 
                 <div class="prose max-w-none text-gray-700">
                     {!! $conference->description !!}
@@ -70,6 +70,7 @@
             </div>
 
             <aside class="lg:col-span-1 space-y-8">
+                <!-- Informasi Penting -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">Informasi Penting</h3>
                     <ul class="space-y-3 text-gray-700">
@@ -98,10 +99,12 @@
                         @endif
                     </ul>
                 </div>
-                
+
+                <!-- Jadwal Penting -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     @if($conference->book_of_abstracts_path)
-                        <a href="{{ Illuminate\Support\Facades\Storage::url($conference->book_of_abstracts_path) }}" target="_blank" class="mb-6 w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
+                        <a href="{{ Illuminate\Support\Facades\Storage::url($conference->book_of_abstracts_path) }}" target="_blank"
+                            class="mb-6 w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
                             <i data-feather="book-open" class="mr-2 h-5 w-5"></i>Unduh Prosiding
                         </a>
                     @endif
@@ -123,7 +126,28 @@
                         @endforelse
                     </ul>
                 </div>
+
+                <!-- Kontainer Unduh Template & Kirim Paper -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Aksi Konferensi</h3>
+                    <div class="flex flex-col gap-3">
+                        @if($conference->paper_template_path)
+                            <a href="{{ Illuminate\Support\Facades\Storage::url($conference->paper_template_path) }}" target="_blank"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition">
+                                <i data-feather="download" class="mr-2 h-5 w-5"></i>Unduh Template
+                            </a>
+                        @endif
+
+                        @if(\Carbon\Carbon::parse($conference->end_date)->isAfter(now()))
+                            <a href="{{ route('filament.author.pages.dashboard') }}"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition">
+                                <i data-feather="send" class="mr-2 h-5 w-5"></i>Kirim Paper Sekarang
+                            </a>
+                        @endif
+                    </div>
+                </div>
             </aside>
+
         </div>
     </main>
 

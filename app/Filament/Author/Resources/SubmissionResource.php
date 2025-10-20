@@ -55,13 +55,21 @@ class SubmissionResource extends Resource
                     ->label('Judul Makalah')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->badge(),
-                    // ->color(fn (SubmissionStatus $state): string => match ($state) {
-                    //     SubmissionStatus::Submitted => 'gray',
-                    //     SubmissionStatus::UnderReview => 'warning',
-                    //     SubmissionStatus::Accepted => 'success',
-                    //     SubmissionStatus::Rejected => 'danger',
-                    // }),
+                    ->badge()
+                    ->color(function ($state) {
+                        switch ($state) {
+                            case SubmissionStatus::Submitted:
+                                return 'gray';
+                            case SubmissionStatus::UnderReview:
+                                return 'warning';
+                            case SubmissionStatus::Accepted:
+                                return 'success';
+                            case SubmissionStatus::Rejected:
+                                return 'danger';
+                            default:
+                                return 'secondary';
+                        }
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Submit')
                     ->dateTime('d M Y')

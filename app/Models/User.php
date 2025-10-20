@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use App\Enums\UserStatus; // <-- Import enum
 use Filament\Models\Contracts\HasTenants; // <-- Import interface
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Model; // <-- Import Model
@@ -20,12 +20,13 @@ class User extends Authenticatable implements HasTenants
     use HasApiTokens, HasFactory, Notifiable;
 
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'is_super_admin', // <-- (FIX #1) TAMBAHKAN INI
-    ];
+    protected $guarded = [];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'password',
+    //     'is_super_admin', // <-- (FIX #1) TAMBAHKAN INI
+    // ];
 
     protected $hidden = [
         'password',
@@ -38,6 +39,7 @@ class User extends Authenticatable implements HasTenants
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_super_admin' => 'boolean', // <-- (FIX #2) TAMBAHKAN INI
+            'status' => UserStatus::class,
         ];
     }
 

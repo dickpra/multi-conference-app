@@ -10,6 +10,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Builder;
+use App\Enums\UserStatus;
+use Filament\Resources\Components\Tab;
 
 class UserResource extends Resource
 {
@@ -44,18 +47,68 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
-                Tables\Columns\IconColumn::make('is_super_admin')
-                    ->label('Super Admin')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d M Y')
-                    ->sortable(),
+                // Kolom Status dengan Badge
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        UserStatus::Pending->value, 'pending' => 'warning',
+                        UserStatus::Approved->value, 'approved' => 'success',
+                        UserStatus::Rejected->value, 'rejected' => 'danger',
+                        default => 'secondary',
+                    }),
+                Tables\Columns\IconColumn::make('is_super_admin')->label('Super Admin')->boolean(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime('d M Y')->sortable(),
+            ])
+            ->filters([
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                // Grup Tombol untuk Approve & Reject
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('approve')
+                        ->label('Approve')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->action(fn (User $record) => $record->update(['status' => UserStatus::Approved]))
+                        // Tombol hanya muncul jika status user bukan 'approved'
+                        ->visible(fn (User $record) => $record->status !== UserStatus::Approved),
+                    
+                    Tables\Actions\Action::make('reject')
+                        ->label('Reject')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation() // Tambahkan konfirmasi untuk reject
+                        ->action(fn (User $record) => $record->update(['status' => UserStatus::Rejected]))
+                        // Tombol hanya muncul jika status user bukan 'rejected'
+                        ->visible(fn (User $record) => $record->status !== UserStatus::Rejected),
+                ]),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
+
+    // public static function table(Table $table): Table
+    // {
+    //     return $table
+    //         ->columns([
+    //             Tables\Columns\TextColumn::make('name')->searchable(),
+    //             Tables\Columns\TextColumn::make('email')->searchable(),
+    //             Tables\Columns\IconColumn::make('is_super_admin')
+    //                 ->label('Super Admin')
+    //                 ->boolean(),
+    //             Tables\Columns\TextColumn::make('created_at')
+    //                 ->dateTime('d M Y')
+    //                 ->sortable(),
+    //         ])
+    //         ->actions([
+    //             Tables\Actions\EditAction::make(),
+    //             Tables\Actions\DeleteAction::make(),
+    //         ]);
+    // }
     
     public static function getPages(): array
     {
