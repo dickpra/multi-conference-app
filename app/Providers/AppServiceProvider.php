@@ -32,5 +32,9 @@ class AppServiceProvider extends ServiceProvider
             'panels::global-search.after', // Kaitkan setelah komponen pencarian global
             fn (): string => view('filament.custom.panel-switcher')->render(),
         );
+        FilamentView::registerRenderHook(
+        'panels::global-search.after', // Posisi: Setelah search bar (sebelahan dengan panel switcher)
+        fn (): string => view('filament.custom.language-switcher')->render(),
+    );
     }
 }

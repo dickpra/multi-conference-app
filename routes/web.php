@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PanelSwitchController;
+use App\Http\Controllers\LanguageController;
+
 
 // Bungkus rute untuk menampilkan dan memproses login dengan middleware 'guest'
 Route::middleware('guest')->group(function () {
@@ -24,6 +26,8 @@ Route::middleware('auth:web,chair,admin')->group(function () {
     Route::get('/switch-to-general', [PanelSwitchController::class, 'switchToGeneral'])
         ->name('switch.general');
 });
+
+Route::get('lang/{code}', [LanguageController::class, 'switch'])->name('lang.switch');
 
 // Rute logout tetap di luar karena hanya bisa diakses oleh user yang sudah login
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
