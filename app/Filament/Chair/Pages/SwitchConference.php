@@ -2,6 +2,7 @@
 
 namespace App\Filament\Chair\Pages;
 
+use App\Enums\ConferenceRole; // <-- 1. Tambahkan Import ini
 use App\Models\Conference;
 use Filament\Pages\Page;
 use Filament\Tables;
@@ -18,34 +19,25 @@ class SwitchConference extends Page implements HasTable
     protected static ?string $navigationIcon  = 'heroicon-o-building-library';
     protected static ?string $navigationLabel = 'Ganti Konferensi';
     protected static ?string $navigationGroup = 'Konferensi';
-    protected static ?string $title           = 'Pilih / Ganti Konferensi';
+    protected static ?string $title           = 'Pilih Konferensi (Peran Chair)';
     protected static string $view = 'filament.pages.switch-conference';
-
-     protected static ?int $navigationSort = -3;
+    protected static ?int $navigationSort = -3;
 
      
     public function mount(): void
     {
-        // Tidak perlu apa-apa; table akan dirender oleh HasTable
+        // ...
     }
-
-    // public function getTableQuery(): Builder
-    // {
-    //     // Ambil ID user yang sedang login
-    //     $userId = auth()->id();
-
-    //     // Kembalikan HANYA konferensi yang terhubung dengan user ini
-    //     return Conference::query()->whereHas('users', function ($query) use ($userId) {
-    //         $query->where('user_id', $userId);
-    //     });
-    // }
 
     public function table(Table $table): Table
     {
         return $table
             ->query(
-                Conference::query()->whereHas('users', function ($query) {
-                    $query->where('user_id', auth()->id());
+                // --- 2. PERBAIKI LOGIKA QUERY INI ---
+                Conference::query()->whereHas('users', function (Builder $query) {
+                    $query->where('user_id', auth()->id())
+                          // Tambahkan filter peran CHAIR di tabel pivot
+                          ->where('role', ConferenceRole::Chair);
                 })
             )
             ->columns([
@@ -66,11 +58,12 @@ class SwitchConference extends Page implements HasTable
                 Action::make('masuk')
                     ->label('Masuk')
                     ->icon('heroicon-o-arrow-right-start-on-rectangle')
+                    // Cek slug vs ID, asumsikan slug. Jika error 404, ganti $record->id
                     ->url(fn (Conference $record) => url("/chair/{$record->slug}"))
                     ->openUrlInNewTab(false),
             ])
             ->defaultSort('start_date', 'desc')
-            ->paginated([10, 25, 50])     // pagination
-            ->searchDebounce(400);        // search lebih responsif
+            ->paginated([10, 25, 50])
+            ->searchDebounce(400);
     }
 }
