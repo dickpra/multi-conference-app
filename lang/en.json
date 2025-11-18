@@ -157,7 +157,7 @@
     "Dokumen Terlampir": "Attached Documents",
     "Catatan Revisi dari Anda (Chair)": "Revision Notes from You (Chair)",
     "Hasil Review": "Review Results",
-    "Nama Reviewer": "Nama Reviewer",
+    "Nama Reviewer": "Reviewer Name",
     "Tanggal Ulasan": "Review Date",
     "Nama": "No",
     "Masuk": "Enter",
@@ -172,5 +172,15 @@
     "Anda belum memberikan ulasan untuk makalah ini.": "You have not provided a review for this paper.",
     "Versi Awal:": "Initial Version:",
     "Unduh File": "Download Files",
-    "Versi Revisi:": "Revised Version:"
+    "Versi Revisi:": "Revised Version:",
+    "Tren Submission Makalah (6 Bulan Terakhir)": "Paper Submission Trends (Last 6 Months)",
+    "Jumlah Makalah Masuk": "Number of Entry Papers",
+    "Jumlah semua konferensi yang terdaftar": "The number of all registered conferences",
+    "Global Acceptance Rate": "Global Acceptance Rate",
+    "Persentase penerimaan seluruh konferensi": "Conference-wide acceptance percentage",
+    "Top 5 Negara Asal Pengguna": "Top 5 User Origin Countries",
+    "Aktivitas Submissi (30 Hari Terakhir)": "Submission Activity (Last 30 Days)",
+    "Status Distribusi Makalah": "Paper Distribution Status",
+    "Makalah": "Paper",
+    "The provided credentials are incorrect.": "The provided credentials are incorrect."
 }

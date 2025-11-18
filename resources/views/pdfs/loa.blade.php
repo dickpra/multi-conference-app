@@ -61,7 +61,7 @@
 <body>
     <div class="container">
         <div class="letterhead">
-            {{-- Logo at the top --}}
+            {{-- Conference logo --}}
             @if ($submission->conference->logo)
                 <img src="{{ public_path('storage/' . $submission->conference->logo) }}" class="logo" alt="Conference Logo">
             @endif
@@ -73,18 +73,18 @@
             </div>
         </div>
 
-        <p class="date">Date: {{ now()->format('d F Y') }}</p>
+        <p class="date">Date: {{ now()->format('F d, Y') }}</p>
 
         <div class="content">
             <p>
-                To Whom It May Concern:<br>
+                Dear<br>
                 <strong>{{ $submission->author->name }}</strong>
             </p>
 
-            <p>Dear **{{ $submission->author->name }}** / Distinguished Author,</p>
+            <p>Greetings,</p>
 
             <p>
-                Referring to the review process for the paper you submitted with the title:
+                Referring to the review process for the paper you submitted, entitled:
             </p>
 
             <div class="paper-title">"{{ $submission->title }}"</div>
@@ -94,7 +94,7 @@
             </p>
 
             <p>
-                We congratulate you on your achievement and thank you for your valuable contribution to our conference. Further information will be provided shortly.
+                We congratulate you on this achievement and thank you for your valuable contribution to our conference. Further information will be provided shortly.
             </p>
 
             <p>Sincerely,</p>
