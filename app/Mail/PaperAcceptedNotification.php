@@ -26,7 +26,7 @@ class PaperAcceptedNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Selamat! Makalah Anda Diterima',
+            subject: 'Congratulations! Your Paper Has Been Accepted',
         );
     }
 

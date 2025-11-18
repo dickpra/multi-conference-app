@@ -30,7 +30,7 @@ class AuthorPanelProvider extends PanelProvider
             ->brandName('Multi Conference - Author Dashboard')
             ->id('author')
             ->path('author')
-            ->login(Login::class)
+            // ->login(Login::class)
             // ->registration(Register::class)
             ->authGuard('web')
             ->colors([

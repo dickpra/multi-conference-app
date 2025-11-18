@@ -23,7 +23,7 @@ class PaperRejectedNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Informasi Mengenai Status Makalah Anda',
+            subject: 'Information about your paper has been rejected',
         );
     }
 

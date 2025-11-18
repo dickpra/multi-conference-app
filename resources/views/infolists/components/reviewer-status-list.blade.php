@@ -21,6 +21,6 @@
             </span>
         </div>
     @empty
-        <span class="text-sm text-gray-400">Belum ada</span>
+        <span class="text-sm text-gray-400">{{ __('Belum ada') }}</span>
     @endforelse
 </div>

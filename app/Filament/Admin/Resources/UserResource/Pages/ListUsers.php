@@ -23,13 +23,13 @@ class ListUsers extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('Semua User'),
-            'pending' => Tab::make('Menunggu Persetujuan')
+            'all' => Tab::make(__('Semua User')),
+            'pending' => Tab::make(__('Menunggu Persetujuan'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', UserStatus::Pending))
                 ->badge(User::where('status', UserStatus::Pending)->count()),
-            'approved' => Tab::make('Disetujui')
+            'approved' => Tab::make(__('Disetujui'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', UserStatus::Approved)),
-            'rejected' => Tab::make('Ditolak')
+            'rejected' => Tab::make(__('Ditolak'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', UserStatus::Rejected)),
         ];
     }

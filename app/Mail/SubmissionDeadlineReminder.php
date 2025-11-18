@@ -23,7 +23,7 @@ class SubmissionDeadlineReminder extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pengingat: Batas Akhir Submission Semakin Dekat',
+            subject: 'Reminder: Submission Deadline',
         );
     }
 

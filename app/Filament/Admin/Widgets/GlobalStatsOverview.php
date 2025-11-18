@@ -13,11 +13,11 @@ class GlobalStatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Total Konferensi', Conference::count())
+            Stat::make(__('Total Konferensi'), Conference::count())
                 ->icon('heroicon-o-building-library'),
-            Stat::make('Total Pengguna', User::count())
+            Stat::make(__('Total Pengguna'), User::count())
                 ->icon('heroicon-o-users'),
-            Stat::make('Total Makalah Masuk', Submission::count())
+            Stat::make(__('Total Makalah Masuk'), Submission::count())
                 ->icon('heroicon-o-document-text'),
         ];
     }

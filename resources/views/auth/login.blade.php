@@ -33,8 +33,8 @@
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <div class="text-center mb-6">
             {{-- <img src="{{ asset('img/logo.png') }}" alt="Logo" class="mx-auto h-16 mb-2"> --}}
-            <h1 class="text-2xl font-bold text-gray-800">Selamat Datang</h1>
-            <p class="text-sm text-gray-500">Silakan login untuk melanjutkan</p>
+            <h1 class="text-2xl font-bold text-gray-800">Welcome</h1>
+            <p class="text-sm text-gray-500">Please login to continue</p>
         </div>
 
         {{-- Error Alert --}}
@@ -76,11 +76,11 @@
         </form>
 
         <div class="text-center mt-6 text-sm text-gray-600">
-            Belum punya akun? <a href="/register" class="text-primary hover:underline">Daftar di sini</a>
+            Not have an account? <a href="/register" class="text-primary hover:underline">Register</a>
         </div>
-        <div class="text-center mt-4 text-sm">
-            <p>Login sebagai <a href="/author/login" class="text-primary hover:underline">Author</a> atau <a href="/reviewer/login" class="text-primary hover:underline">Reviewer</a>.</p>
-        </div>
+        {{-- <div class="text-center mt-4 text-sm">
+            <p>Login as <a href="/author/login" class="text-primary hover:underline">Author</a> or <a href="/reviewer/login" class="text-primary hover:underline">Reviewer</a>.</p>
+        </div> --}}
     </div>
 
 </body>

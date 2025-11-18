@@ -36,7 +36,9 @@ Route::get('/conference/{conference:slug}', [PublicController::class, 'show'])->
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
 
-
+Route::fallback(function () {
+    return redirect()->to(url()->previous());
+});
 // Route::get('/', function () {
 //     return view('welcome');
 // });

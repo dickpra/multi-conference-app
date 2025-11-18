@@ -16,9 +16,29 @@ class Settings extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static ?string $navigationLabel = 'Pengaturan Profil';
+    // protected static ?string $navigationLabel = 'Pengaturan Profil';
     protected static string $view = 'filament.author.pages.settings';
     protected static ?int $navigationSort = 10; // Taruh di bagian bawah
+
+    public function getTitle(): string
+    {
+        return __('Profile Settings');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Profile Settings');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Profile Settings');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Profile Settings');
+    }
 
     public ?array $data = [];
 
@@ -33,22 +53,22 @@ class Settings extends Page implements HasForms
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->label('Nama Lengkap')
+                    ->label(__('Nama Lengkap'))
                     ->required(),
                 TextInput::make('country')
-                    ->label('Negara Asal'),
+                    ->label(__('Negara Asal')),
                 TextInput::make('email')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('password')
-                    ->label('Password Baru')
+                    ->label(__('Password Baru'))
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->dehydrated(fn ($state) => filled($state))
                     ->confirmed(), // Otomatis menambahkan field konfirmasi password
                 TextInput::make('password_confirmation')
-                    ->label('Konfirmasi Password Baru')
+                    ->label(__('Konfirmasi Password Baru'))
                     ->password()
                     ->dehydrated(false),
             ])
@@ -60,7 +80,7 @@ class Settings extends Page implements HasForms
     {
         return [
             Action::make('save')
-                ->label('Simpan Perubahan')
+                ->label(__('Simpan Perubahan'))
                 ->submit('save'),
         ];
     }
@@ -84,7 +104,7 @@ class Settings extends Page implements HasForms
         auth()->user()->update($updateData);
 
         Notification::make()
-            ->title('Profil berhasil diperbarui')
+            ->title(__('Profil berhasil diperbarui'))
             ->success()
             ->send();
 

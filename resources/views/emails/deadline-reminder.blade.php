@@ -1,14 +1,14 @@
 <x-mail::message>
-# Pengingat Batas Akhir Submission
+# Submission Deadline Reminder
 
-Halo,
+Hello,
 
-Ini adalah pengingat bahwa batas akhir pengumpulan makalah untuk konferensi **{{ $schedule->conference->name }}** akan segera tiba.
+This is a reminder that the paper submission deadline for the **{{ $schedule->conference->name }}** conference is approaching soon.
 
-**Deadline:** {{ \Carbon\Carbon::parse($schedule->date)->translatedFormat('d F Y') }}.
+**Deadline:** {{ \Carbon\Carbon::parse($schedule->date)->translatedFormat('F d, Y') }}.
 
-Jangan sampai terlewat! Segera siapkan dan kirimkan makalah terbaik Anda melalui panel Author di platform kami.
+Don't miss it! Please prepare and submit your best paper through the Author panel on our platform.
 
-Terima kasih,<br>
-Panitia {{ $schedule->conference->name }}
+Thank you,<br>
+Committee of {{ $schedule->conference->name }}
 </x-mail::message>

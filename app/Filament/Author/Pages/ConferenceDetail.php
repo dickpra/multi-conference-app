@@ -48,20 +48,21 @@ class ConferenceDetail extends Page implements HasInfolists
                         Grid::make(2)->schema([
                             ImageEntry::make('logo')->hiddenLabel(),
                             Grid::make(1)->schema([
-                                TextEntry::make('location')->label('Lokasi'),
+                                TextEntry::make('location')
+                                ->label(__('Lokasi')),
                                 TextEntry::make('start_date')
-                                    ->label('Tanggal')
+                                    ->label(__('Tanggal'))
                                     ->formatStateUsing(fn ($record) => 
                                         Carbon::parse($record->start_date)->format('d M') . ' - ' . Carbon::parse($record->end_date)->format('d M Y')
                                     ),
                                 TextEntry::make('description')
-                                    ->label('Deskripsi / CFP')
+                                    ->label(__('Deskripsi / CFP'))
                                     ->html()
                                     ->columnSpanFull(),
                                 TextEntry::make('isbn_issn')
                                     ->label('ISBN/ISSN'),
                                 TextEntry::make('paper_template_path')
-                                    ->label('Unduh Template Paper')
+                                    ->label(__('Unduh Template Paper'))
                                     ->icon('heroicon-o-arrow-down-tray')
                                     ->color('success')
                                     ->url(fn ($record) => Storage::url($record->paper_template_path))
@@ -80,7 +81,7 @@ class ConferenceDetail extends Page implements HasInfolists
     {
         return [
             Action::make('submit')
-                ->label('Submit Paper Sekarang')
+                ->label(__('Submit Paper Sekarang'))
                 ->icon('heroicon-o-document-arrow-up')
                 ->url(fn (): string => SubmitPaper::getUrl(['conference' => $this->conference]))
                 // --- TAMBAHKAN KONDISI INI ---

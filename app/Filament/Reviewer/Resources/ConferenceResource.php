@@ -16,7 +16,12 @@ class ConferenceResource extends Resource
 {
     protected static ?string $model = Conference::class;
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
-    protected static ?string $navigationLabel = 'Pilih Konferensi';
+    // protected static ?string $navigationLabel = 'Pilih Konferensi';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Pilih Konferensi');
+    }
 
     public static function canCreate(): bool
     {
@@ -41,7 +46,7 @@ class ConferenceResource extends Resource
                 Tables\Columns\TextColumn::make('start_date')->date('d M Y'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label('Lihat Tugas'),
+                Tables\Actions\ViewAction::make()->label(__('Lihat Tugas')),
             ]);
     }
 

@@ -14,12 +14,12 @@ class AuthorStatsOverview extends BaseWidget
         $submissions = Submission::where('user_id', auth()->id());
 
         return [
-            Stat::make('Total Makalah Dikirim', $submissions->count())
+            Stat::make(__('Total Makalah Dikirim'), $submissions->count())
                 ->icon('heroicon-o-document-text'),
-            Stat::make('Makalah Diterima', $submissions->clone()->where('status', SubmissionStatus::Accepted)->count())
+            Stat::make(__('Makalah Diterima'), $submissions->clone()->where('status', SubmissionStatus::Accepted)->count())
                 ->color('success')
                 ->icon('heroicon-o-check-circle'),
-            Stat::make('Makalah Ditolak', $submissions->clone()->where('status', SubmissionStatus::Rejected)->count())
+            Stat::make(__('Makalah Ditolak'), $submissions->clone()->where('status', SubmissionStatus::Rejected)->count())
                 ->color('danger')
                 ->icon('heroicon-o-x-circle'),
         ];

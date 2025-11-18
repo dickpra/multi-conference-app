@@ -36,7 +36,7 @@ class UserResource extends Resource
                     ->required(fn (string $context): bool => $context === 'create'),
                 // Toggle untuk menjadikan user sebagai Super Admin
                 Forms\Components\Toggle::make('is_super_admin')
-                    ->label('Jadikan Super Admin')
+                    ->label(__('Jadikan Super Admin'))
                     ->required(),
             ]);
     }

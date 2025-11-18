@@ -34,7 +34,7 @@ class ConferenceReview extends Page implements HasTable
 
     public function getTitle(): string | Htmlable
     {
-        return 'Tugas Review: ' . $this->conference->name;
+        return (__('Tugas Review: ')) . $this->conference->name;
     }
 
     public static function getRoutePath(): string
@@ -47,9 +47,9 @@ class ConferenceReview extends Page implements HasTable
         $userId = auth()->id();
 
         return [
-            'all' => Tab::make('Semua Tugas'),
+            'all' => Tab::make(__('Semua Tugas')),
 
-            'needs_review' => Tab::make('Membutuhkan Ulasan')
+            'needs_review' => Tab::make(__('Membutuhkan Ulasan'))
                 ->modifyQueryUsing(function (Builder $query) use ($userId) {
                     // Tampilkan HANYA makalah yang belum pernah direview oleh user ini
                     $query->whereDoesntHave('reviews', fn (Builder $q) => $q->where('user_id', $userId));
@@ -57,8 +57,8 @@ class ConferenceReview extends Page implements HasTable
                 ->badge(
                     $this->getTableQuery()->whereDoesntHave('reviews', fn(Builder $q) => $q->where('user_id', $userId))->count()
                 ),
-            
-            'needs_rereview' => Tab::make('Butuh Ulasan Ulang')
+
+            'needs_rereview' => Tab::make(__('Butuh Ulasan Ulang'))
                 ->modifyQueryUsing(function (Builder $query) use ($userId) {
                     // Tampilkan makalah yang sudah direview, TAPI sudah diupdate (direvisi)
                     $query->whereHas('reviews', fn (Builder $q) => $q->where('user_id', $userId))
@@ -71,7 +71,7 @@ class ConferenceReview extends Page implements HasTable
                         ->count()
                 ),
 
-            'finished' => Tab::make('Selesai Diulas')
+            'finished' => Tab::make(__('Selesai Diulas'))
                 ->modifyQueryUsing(function (Builder $query) use ($userId) {
                     // Tampilkan makalah yang sudah direview DAN tidak diupdate setelahnya
                     $query->whereHas('reviews', fn (Builder $q) => $q->where('user_id', $userId))
@@ -97,28 +97,29 @@ class ConferenceReview extends Page implements HasTable
                     })
             )
             ->columns([
-                TextColumn::make('title')->label('Judul Makalah')->wrap(),
+                TextColumn::make('title')
+                    ->label(__('Judul Makalah'))->wrap(),
                 // --- TAMBAHKAN KEMBALI KOLOM STATUS INI ---
                 TextColumn::make('review_status')
-                    ->label('Status Ulasan Anda')
+                    ->label(__('Status Ulasan Anda'))
                     ->state(function (Submission $record): string {
                         if ($record->status === SubmissionStatus::RevisionSubmitted) {
-                            return 'Butuh Ulasan Ulang';
+                            return __('Butuh Ulasan Ulang');
                         }
 
                         $hasReviewed = $record->reviews()->where('user_id', auth()->id())->exists();
-                        return $hasReviewed ? 'Selesai Diulas' : 'Membutuhkan Ulasan';
+                        return $hasReviewed ? __('Selesai Diulas') : __('Membutuhkan Ulasan');
                     })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Selesai Diulas' => 'success',
-                        'Butuh Ulasan Ulang' => 'warning',
+                        __('Selesai Diulas') => 'success',
+                        __('Butuh Ulasan Ulang') => 'warning',
                         default => 'gray',
                     }),
             ])
             ->actions([
                 Action::make('view_and_review')
-                    ->label('Lihat & Review')
+                    ->label(__('Lihat & Review'))
                     ->icon('heroicon-o-arrow-right-circle')
                     ->url(fn (Submission $record): string => ReviewSubmission::getUrl(['submission' => $record])),
             ]);

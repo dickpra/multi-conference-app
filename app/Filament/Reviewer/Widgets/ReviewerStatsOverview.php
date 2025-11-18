@@ -30,12 +30,12 @@ class ReviewerStatsOverview extends BaseWidget
         $completedTasks = $totalTasks - $pendingTasks;
 
         return [
-            Stat::make('Total Tugas Review', $totalTasks)
+            Stat::make(__('Total Tugas Review'), $totalTasks)
                 ->icon('heroicon-o-document-duplicate'),
-            Stat::make('Membutuhkan Ulasan', $pendingTasks)
+            Stat::make(__('Membutuhkan Ulasan'), $pendingTasks)
                 ->color('warning')
                 ->icon('heroicon-o-clock'),
-            Stat::make('Selesai Diulas', $completedTasks)
+            Stat::make(__('Selesai Diulas'), $completedTasks)
                 ->color('success')
                 ->icon('heroicon-o-check-badge'),
         ];

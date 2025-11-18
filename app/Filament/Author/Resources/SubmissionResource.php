@@ -19,8 +19,18 @@ class SubmissionResource extends Resource
 {
     protected static ?string $model = Submission::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
-    protected static ?string $navigationLabel = 'Riwayat Submission Saya';
+    // protected static ?string $navigationLabel = 'Riwayat Submission Saya';
     protected static ?int $navigationSort = 1;
+
+    public static function getModelLabel(): string
+    {
+        return 'Submission';
+    }
+    public static function getPluralModelLabel(): string
+    {
+        return 'Submissions';
+    }
+
 
     public static function getEloquentQuery(): Builder
     {
@@ -34,11 +44,11 @@ class SubmissionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')->label('Judul Makalah')->required(),
-                Forms\Components\RichEditor::make('abstract')->label('Abstrak')->required(),
-                Forms\Components\TagsInput::make('keywords')->label('Kata Kunci')->required(),
+                Forms\Components\TextInput::make('title')->label(__('Judul Makalah'))->required(),
+                Forms\Components\RichEditor::make('abstract')->label(__('Abstrak'))->required(),
+                Forms\Components\TagsInput::make('keywords')->label(__('Kata Kunci'))->required(),
                 Forms\Components\FileUpload::make('full_paper_path')
-                    ->label('Unggah Makalah Lengkap (PDF/DOCX)')
+                    ->label(__('Unggah Makalah Lengkap (PDF/DOCX)'))
                     ->directory('full-papers')
                     ->required(),
             ]);
@@ -49,10 +59,10 @@ class SubmissionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('conference.name')
-                    ->label('Konferensi')
+                    ->label(__('Konferensi'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Judul Makalah')
+                    ->label(__('Judul Makalah'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
@@ -71,7 +81,7 @@ class SubmissionResource extends Resource
                         }
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Tanggal Submit')
+                    ->label(__('Tanggal Submit'))
                     ->dateTime('d M Y')
                     ->sortable(),
             ])

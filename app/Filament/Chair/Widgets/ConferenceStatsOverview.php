@@ -30,17 +30,17 @@ class ConferenceStatsOverview extends BaseWidget
         $submissionCount = Submission::where('conference_id', $conference->id)->count();
 
         return [
-            Stat::make('Total Tim (Chair & Reviewer)', $teamCount)
-                ->description('Jumlah user yang terlibat dalam pengelolaan')
+            Stat::make(__('Total Tim (Chair & Reviewer)'), $teamCount)
+                ->description(__('Jumlah user yang terlibat dalam pengelolaan'))
                 ->icon('heroicon-o-users'),
 
-            Stat::make('Jumlah Reviewer', $reviewerCount)
-                ->description('User dengan peran sebagai Reviewer')
+            Stat::make(__('Jumlah Reviewer'), $reviewerCount)
+                ->description(__('User dengan peran sebagai Reviewer'))
                 ->icon('heroicon-o-academic-cap'),
             
             // --- STATISTIK BARU ---
-            Stat::make('Total Paper Masuk', $submissionCount)
-                ->description('Jumlah makalah yang telah disubmit ke konferensi ini')
+            Stat::make(__('Total Paper Masuk'), $submissionCount)
+                ->description(__('Jumlah makalah yang telah disubmit ke konferensi ini'))
                 ->icon('heroicon-o-document-text'),
         ];
     }

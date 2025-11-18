@@ -12,7 +12,7 @@
                 <div class="grid grid-cols-3 gap-6">
                     {{-- Nama Reviewer (selalu nama sendiri) --}}
                     <div class="fi-in-text text-sm">
-                        <span class="font-medium text-gray-500">Peninjau:</span>
+                        <span class="font-medium text-gray-500">{{ __('Peninjau') }}:</span>
                         <span class="text-gray-950">{{ $review->reviewer->name }}</span>
                     </div>
                     {{-- Rekomendasi --}}
@@ -23,18 +23,18 @@
                     </div>
                     {{-- Tanggal Ulasan --}}
                     <div class="fi-in-text text-sm">
-                        <span class="font-medium text-gray-500">Tanggal:</span>
+                        <span class="font-medium text-gray-500">{{ __('Tanggal') }}:</span>
                         <span class="text-gray-950">{{ $review->created_at->diffForHumans() }}</span>
                     </div>
                     {{-- Komentar --}}
                     <div class="fi-in-text text-sm col-span-full">
-                        <span class="font-medium text-gray-500">Komentar:</span>
+                        <span class="font-medium text-gray-500">{{ __('Komentar') }}:</span>
                         <div class="prose max-w-none text-gray-950">{!! $review->comments !!}</div>
                     </div>
                 </div>
             </div>
         </div>
     @empty
-        <p class="text-sm text-gray-500">Anda belum memberikan ulasan untuk makalah ini.</p>
+        <p class="text-sm text-gray-500">{{ __('Anda belum memberikan ulasan untuk makalah ini.') }}</p>
     @endforelse
 </div>

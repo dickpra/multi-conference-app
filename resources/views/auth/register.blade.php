@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi - Conferex</title>
+    <title>Register Account</title>
 
     {{-- Tailwind CSS & Konfigurasi --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -23,8 +23,8 @@
 
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Buat Akun Baru</h1>
-            <p class="text-sm text-gray-500">Isi data di bawah untuk mendaftar</p>
+            <h1 class="text-2xl font-bold text-gray-800">Create a New Account</h1>
+            <p class="text-sm text-gray-500">Fill in the details below to register</p>
         </div>
 
         {{-- Error Alert --}}
@@ -42,7 +42,7 @@
             @csrf
 
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
                 <input id="name" name="name" type="text" value="{{ old('name') }}" required
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:outline-none text-sm">
             </div>
@@ -55,9 +55,9 @@
 
             {{-- FORM NEGARA BARU --}}
             <div>
-                <label for="country" class="block text-sm font-medium text-gray-700">Negara</label>
+                <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
                 <input id="country" name="country" type="text" value="{{ old('country') }}" required
-                    placeholder="Contoh: Indonesia"
+                    placeholder="Example: Indonesia"
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:outline-none text-sm">
             </div>
 
@@ -68,19 +68,19 @@
             </div>
 
             <div>
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
                 <input id="password_confirmation" name="password_confirmation" type="password" required
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:outline-none text-sm">
             </div>
 
             <button type="submit"
                 class="w-full py-2.5 px-4 bg-primary hover:bg-secondary text-white font-semibold rounded-md transition duration-200">
-                Daftar
+                Register
             </button>
         </form>
 
         <div class="text-center mt-6 text-sm text-gray-600">
-            Sudah punya akun? <a href="{{ route('login') }}" class="text-primary hover:underline font-medium">Login di sini</a>
+            Have an account? <a href="{{ route('login') }}" class="text-primary hover:underline font-medium">Login</a>
         </div>
     </div>
 </body>

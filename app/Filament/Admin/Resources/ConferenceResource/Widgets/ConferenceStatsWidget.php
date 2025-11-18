@@ -17,7 +17,7 @@ class ConferenceStatsWidget extends BaseWidget
         $acceptanceRate = $totalSubmissions > 0 ? round(($acceptedSubmissions / $totalSubmissions) * 100, 2) : 0;
 
         return [
-            Stat::make('Makalah Masuk', $totalSubmissions),
+            Stat::make((__('Makalah Masuk')), $totalSubmissions),
             Stat::make('Makalah Diterima', $acceptedSubmissions),
             Stat::make('Tingkat Penerimaan', $acceptanceRate . '%'),
         ];

@@ -27,7 +27,7 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
     {
         return [
             Action::make('upload_revision')
-                ->label('Unggah Dokumen Revisi')
+                ->label(__('Unggah Dokumen Revisi'))
                 ->color('warning')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->mountUsing(function ($form) {
@@ -38,13 +38,13 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
                 })
                 ->form([
                     \Filament\Forms\Components\TextInput::make('title')
-                        ->label('Judul Makalah (Revisi)')
+                        ->label(__('Judul Makalah (Revisi)'))
                         ->required(),
                     \Filament\Forms\Components\RichEditor::make('abstract')
-                        ->label('Abstrak (Revisi)')
+                        ->label(__('Abstrak (Revisi)'))
                         ->required(),
                     \Filament\Forms\Components\FileUpload::make('revised_paper_path')
-                        ->label('File Revisi (PDF/DOCX)')
+                        ->label(__('File Revisi (PDF/DOCX)'))
                         ->directory(fn () => 'conferences/' . $this->getRecord()->conference->slug . '/revised-papers')
                         ->required(),
                 ])
@@ -55,7 +55,7 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
                         'revised_paper_path' => $data['revised_paper_path'],
                         'status' => \App\Enums\SubmissionStatus::RevisionSubmitted,
                     ]);
-                    \Filament\Notifications\Notification::make()->title('File revisi berhasil diunggah')->success()->send();
+                    \Filament\Notifications\Notification::make()->title(__('File revisi berhasil diunggah'))->success()->send();
 
                     // --- GANTI BARIS INI ---
                     // $this->refresh(); // Ini Salah
@@ -71,7 +71,7 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
         return $infolist
             ->record($this->getRecord())
             ->schema([
-                Infolists\Components\Section::make('Detail Makalah')
+                Infolists\Components\Section::make(__('Detail Makalah'))
                     ->schema([
                         Infolists\Components\TextEntry::make('title'),
                         Infolists\Components\TextEntry::make('status')->badge(),
@@ -79,7 +79,7 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
                         Infolists\Components\TextEntry::make('abstract')->html()->columnSpanFull(),
                     ])->columns(2),
 
-                Infolists\Components\Section::make('Riwayat File')
+                Infolists\Components\Section::make(__('Riwayat File'))
                 ->schema([
                     ViewEntry::make('files')
                         ->hiddenLabel()
@@ -87,7 +87,7 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
                 ]),
 
                 // --- TAMBAHKAN SECTION BARU INI ---
-                Infolists\Components\Section::make('Catatan dari Panitia / Chair')
+                Infolists\Components\Section::make(__('Catatan dari Panitia / Chair'))
                     ->schema([
                         Infolists\Components\TextEntry::make('chair_revision_notes')
                             ->html()

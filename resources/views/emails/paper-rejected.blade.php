@@ -1,26 +1,26 @@
 <x-mail::message>
-# Informasi Status Makalah
+# Paper Status Information
 
-Kepada Yth. **{{ $submission->author->name }}**,
+Dear **{{ $submission->author->name }}**,
 
-Terima kasih telah mengirimkan makalah Anda yang berjudul **"{{ $submission->title }}"** ke **{{ $submission->conference->name }}**.
+Thank you for submitting your paper titled **"{{ $submission->title }}"** to **{{ $submission->conference->name }}**.
 
-Setelah melalui proses peninjauan, dengan berat hati kami memberitahukan bahwa makalah Anda belum dapat kami terima untuk dipresentasikan pada konferensi kali ini.
+After the review process, we regret to inform you that your paper has not been accepted for presentation at this conference.
 
-Kami sangat menghargai usaha dan waktu yang telah Anda curahkan. Sebagai masukan yang membangun untuk pengembangan penelitian Anda di masa depan, berikut adalah beberapa komentar dari para reviewer (anonim):
+We greatly appreciate the effort and time you have invested. As constructive feedback for your future research, here are some comments from the (anonymous) reviewers:
 
 ---
 
 @foreach ($submission->reviews as $review)
-**Rekomendasi:** {{ $review->recommendation->name }}
+**Recommendation:** {{ $review->recommendation->name }}
 
-**Komentar:**
+**Comments:**
 {!! $review->comments !!}
 <hr>
 @endforeach
 
-Kami berharap masukan ini dapat bermanfaat dan kami menantikan partisipasi Anda di kesempatan berikutnya.
+We hope these comments are helpful, and we look forward to your participation in future opportunities.
 
-Hormat kami,<br>
-Panitia {{ $submission->conference->name }}
+Best regards,<br>
+Committee of {{ $submission->conference->name }}
 </x-mail::message>

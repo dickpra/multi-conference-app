@@ -39,8 +39,8 @@ class Register extends BaseRegister
 
         // Kirim notifikasi sukses
         Notification::make()
-            ->title('Registrasi Berhasil!')
-            ->body('Akun Anda telah dibuat dan sedang menunggu persetujuan dari Admin.')
+            ->title('Registration Successful!')
+            ->body('Your account has been created and is pending approval by the Admin.')
             ->success()
             ->persistent() // Membuat notifikasi tetap ada sampai di-close manual
             ->send();

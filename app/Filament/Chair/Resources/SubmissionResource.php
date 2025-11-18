@@ -35,7 +35,11 @@ class SubmissionResource extends Resource
 {
     protected static ?string $model = Submission::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationLabel = 'Makalah Masuk';
+    // protected static ?string $navigationLabel = 'Makalah Masuk';
+    public static function getNavigationLabel(): string
+    {
+        return __('Makalah Masuk');
+    }
 
     // Beritahu Filament relasi yang menghubungkan Submission ke Conference
     protected static ?string $tenantRelationshipName = 'conference';
@@ -51,11 +55,11 @@ class SubmissionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Judul Makalah')
+                    ->label(__('Judul Makalah'))
                     ->searchable()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('author.name')
-                    ->label('Nama Penulis')
+                    ->label(__('Nama Penulis'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
@@ -74,7 +78,7 @@ class SubmissionResource extends Resource
                 //     ->label('Reviewers')
                 //     ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Tanggal Submit')
+                    ->label(__('Tanggal Submit'))
                     ->dateTime('d M Y')
                     ->sortable(),
             ])
@@ -95,7 +99,7 @@ class SubmissionResource extends Resource
                 })
                 ->form([
                     CheckboxList::make('reviewers')
-                        ->label('Pilih Reviewer')
+                        ->label(__('Pilih Reviewer'))
                         ->options(function () {
                             return Filament::getTenant()->users()
                                 ->where('role', ConferenceRole::Reviewer)
@@ -115,7 +119,7 @@ class SubmissionResource extends Resource
                         $record->update(['status' => SubmissionStatus::Submitted]);
                     }
 
-                    Notification::make()->title('Daftar reviewer berhasil diupdate')->success()->send();
+                    Notification::make()->title(__('Daftar reviewer berhasil diupdate'))->success()->send();
                 }),
             ]);
     }
@@ -124,17 +128,17 @@ class SubmissionResource extends Resource
     {
         return $infolist->schema([
             // Bagian ini tetap sama
-            Section::make('Informasi Makalah')
+            Section::make(__('Informasi Makalah'))
                 ->headerActions([
                     Action::make('request_revision')
-                        ->label('Minta Revisi')
+                        ->label(__('Minta Revisi'))
                         ->color('warning')
                         ->icon('heroicon-o-arrow-path')
                         ->requiresConfirmation()
                         // --- TAMBAHKAN FORM INI ---
                         ->form([
                             RichEditor::make('chair_revision_notes')
-                                ->label('Catatan / Instruksi Revisi untuk Penulis')
+                                ->label(__('Catatan / Instruksi Revisi untuk Penulis'))
                                 ->required(),
                         ])
                         ->action(function (Submission $record, array $data) {
@@ -142,7 +146,8 @@ class SubmissionResource extends Resource
                                 'status' => SubmissionStatus::RevisionRequired,
                                 'chair_revision_notes' => $data['chair_revision_notes'],
                             ]);
-                            Notification::make()->title('Permintaan revisi telah dikirim ke penulis')->success()->send();
+                            Notification::make()
+                            ->title(__('Permintaan revisi telah dikirim ke penulis'))->success()->send();
                         })
                         ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
 
@@ -153,9 +158,9 @@ class SubmissionResource extends Resource
                     ->icon('heroicon-o-check-circle')
                     // --- GANTI requiresConfirmation() DENGAN INI ---
                     ->requiresConfirmation()
-                    ->modalHeading('Accept Makalah dan Kirim LoA')
-                    ->modalDescription('Apakah Anda yakin ingin menerima makalah ini? Tindakan ini akan mengirimkan Letter of Acceptance (LoA) secara otomatis kepada penulis.')
-                    ->modalSubmitActionLabel('Ya, Accept dan Kirim')
+                    ->modalHeading(__('Accept Makalah dan Kirim LoA'))
+                    ->modalDescription(__('Apakah Anda yakin ingin menerima makalah ini? Tindakan ini akan mengirimkan Letter of Acceptance (LoA) secara otomatis kepada penulis.'))
+                    ->modalSubmitActionLabel(__('Ya, Accept dan Kirim'))
                     ->action(function (Submission $record) {
                         // 1. Buat PDF dari view dan simpan ke storage
                         $pdf = PDF::loadView('pdfs.loa', ['submission' => $record]);
@@ -168,7 +173,7 @@ class SubmissionResource extends Resource
                         // 3. Update status makalah
                         $record->update(['status' => SubmissionStatus::Accepted]);
 
-                        Notification::make()->title('Makalah telah di-Accept dan LoA telah dikirim ke penulis')->success()->send();
+                        Notification::make()->title(__('Makalah telah di-Accept dan LoA telah dikirim ke penulis'))->success()->send();
                     })
                     ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
 
@@ -185,7 +190,7 @@ class SubmissionResource extends Resource
                         // 2. Update status makalah
                         $record->update(['status' => SubmissionStatus::Rejected]);
 
-                        Notification::make()->title('Makalah telah di-Reject dan notifikasi telah dikirim ke penulis')->danger()->send();
+                        Notification::make()->title(__('Makalah telah di-Reject dan notifikasi telah dikirim ke penulis'))->danger()->send();
                     })
                     ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
                             ])
@@ -197,13 +202,13 @@ class SubmissionResource extends Resource
                     TextEntry::make('abstract')->html()->columnSpanFull(),
                     // TAMBAHKAN INI
                     ViewEntry::make('files')
-                        ->label('Dokumen Terlampir')
+                        ->label(__('Dokumen Terlampir'))
                         ->view('infolists.components.submission-files')
                         ->columnSpanFull(),
                 ])->columns(2),
 
             // --- TAMBAHKAN SECTION BARU INI ---
-            Section::make('Catatan Revisi dari Anda (Chair)')
+            Section::make(__('Catatan Revisi dari Anda (Chair)'))
             ->schema([
                 TextEntry::make('chair_revision_notes')
                     ->html()
@@ -214,20 +219,20 @@ class SubmissionResource extends Resource
             ->collapsible(), // Bisa dilipat agar tidak memakan tempat
 
             // --- TAMBAHKAN SECTION BARU DI BAWAH INI ---
-            Section::make('Hasil Review')
+            Section::make(__('Hasil Review'))
                 ->schema([
                     RepeatableEntry::make('reviews')
                         ->hiddenLabel()
                         ->schema([
                             TextEntry::make('reviewer.name')
-                                ->label('Nama Reviewer'),
+                                ->label(__('Nama Reviewer')),
                             TextEntry::make('recommendation')
                                 ->badge(),
                             TextEntry::make('created_at')
-                                ->label('Tanggal Ulasan')
+                                ->label(__('Tanggal Ulasan'))
                                 ->since(),
                             TextEntry::make('comments')
-                                ->label('Komentar')
+                                ->label(__('Komentar'))
                                 ->html()
                                 ->columnSpanFull(),
                         ])->columns(3),

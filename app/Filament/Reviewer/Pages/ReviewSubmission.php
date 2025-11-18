@@ -54,7 +54,7 @@ class ReviewSubmission extends Page implements HasInfolists
         return $infolist
             ->record($this->submission)
             ->schema([
-                Section::make('Detail Makalah')
+                Section::make(__('Detail Makalah'))
                     ->schema([
                         Grid::make(2)->schema([
                             TextEntry::make('title'),
@@ -70,7 +70,7 @@ class ReviewSubmission extends Page implements HasInfolists
         return $infolist
             ->record($this->submission)
             ->schema([
-                Section::make('Riwayat Ulasan Saya') // Ubah judul agar lebih jelas
+                Section::make(__('Riwayat Ulasan Saya')) // Ubah judul agar lebih jelas
                     ->schema([
                         // Ganti RepeatableEntry dengan ViewEntry
                         ViewEntry::make('my_reviews')
@@ -88,7 +88,7 @@ class ReviewSubmission extends Page implements HasInfolists
         return [
             // TOMBOL UNTUK FILE ASLI
             Action::make('download_original_paper')
-                ->label('Unduh File Asli')
+                ->label(__('Unduh File Asli'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->url(fn () => Storage::url($this->submission->full_paper_path))
@@ -96,7 +96,7 @@ class ReviewSubmission extends Page implements HasInfolists
 
             // TOMBOL UNTUK FILE REVISI (HANYA MUNCUL JIKA ADA)
             Action::make('download_revised_paper')
-                ->label('Unduh File Revisi')
+                ->label(__('Unduh File Revisi'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('warning')
                 ->url(fn () => Storage::url($this->submission->revised_paper_path))
@@ -106,11 +106,11 @@ class ReviewSubmission extends Page implements HasInfolists
 
             // Tombol untuk memberi ulasan
             Action::make('review')
-                ->label('Beri Ulasan')
+                ->label(__('Beri Ulasan'))
                 ->icon('heroicon-o-pencil-square')
                 ->form([
-                    Radio::make('recommendation')->label('Rekomendasi')->options(Recommendation::class)->required(),
-                    RichEditor::make('comments')->label('Komentar')->required(),
+                    Radio::make('recommendation')->label(__('Rekomendasi'))->options(Recommendation::class)->required(),
+                    RichEditor::make('comments')->label(__('Komentar'))->required(),
                 ])
                 // --- PERBAIKI BAGIAN INI ---
                 // Hapus parameter "Submission $record"
@@ -126,7 +126,7 @@ class ReviewSubmission extends Page implements HasInfolists
                     $this->submission->assignedReviewers()->updateExistingPivot(auth()->id(), [
                         'status' => ReviewStatus::Completed,
                     ]);
-                    Notification::make()->title('Ulasan berhasil disimpan')->success()->send();
+                    Notification::make()->title(__('Ulasan berhasil disimpan'))->success()->send();
                     return redirect()->route(static::getRouteName(), ['submission' => $this->submission->id]);
                 })
                 // Tombol hanya tampil jika user BELUM pernah mereview submission ini

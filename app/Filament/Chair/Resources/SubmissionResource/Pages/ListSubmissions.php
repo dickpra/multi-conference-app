@@ -23,11 +23,11 @@ class ListSubmissions extends ListRecords
     {
         return [
             Actions\Action::make('generate_book')
-                ->label('Cetak Book of Abstracts')
+                ->label('Generate Book of Abstracts')
                 ->icon('heroicon-o-book-open')
                 ->color('success')
                 ->requiresConfirmation()
-                ->modalDescription('Sistem akan mengumpulkan semua makalah yang diterima dan menyusunnya menjadi satu file PDF. Proses ini mungkin memakan waktu beberapa saat.')
+                ->modalDescription(__('Sistem akan mengumpulkan semua makalah yang diterima dan menyusunnya menjadi satu file PDF. Proses ini mungkin memakan waktu beberapa saat.'))
                 // --- 2. GANTI SELURUH BLOK ACTION INI ---
                 ->action(function () {
                     // Ambil tenant (konferensi) saat ini menggunakan Facade
@@ -39,7 +39,7 @@ class ListSubmissions extends ListRecords
                     
                     if ($submissions->isEmpty()) {
                         \Filament\Notifications\Notification::make()
-                            ->title('Tidak ada makalah yang diterima untuk dicetak.')
+                            ->title(__('Tidak ada makalah yang diterima untuk dicetak.'))
                             ->warning()
                             ->send();
                         return;
@@ -62,7 +62,7 @@ class ListSubmissions extends ListRecords
                     // --- AKHIR PERBAIKAN ---
 
                     Notification::make()
-                        ->title('Book of Abstracts berhasil dibuat dan dipublikasikan!')
+                        ->title('Book of Abstracts generated successfully')
                         ->success()
                         ->send();
 
@@ -77,14 +77,14 @@ class ListSubmissions extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('Semua Makalah')
+            'all' => Tab::make(__('Semua Makalah'))
                 ->badge(static::getResource()::getEloquentQuery()->count()),
 
-            'submitted' => Tab::make('Baru Masuk (Belum Direview)')
+            'submitted' => Tab::make(__('Baru Masuk (Belum Direview)'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', SubmissionStatus::Submitted))
                 ->badge(static::getResource()::getEloquentQuery()->where('status', SubmissionStatus::Submitted)->count()),
 
-            'in_review' => Tab::make('Dalam Proses Review')
+            'in_review' => Tab::make(__('Dalam Proses Review'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
                     SubmissionStatus::UnderReview,
                     SubmissionStatus::RevisionRequired,
@@ -96,7 +96,7 @@ class ListSubmissions extends ListRecords
                     SubmissionStatus::RevisionSubmitted
                 ])->count()),
 
-            'finished' => Tab::make('Selesai')
+            'finished' => Tab::make(__('Selesai'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
                     SubmissionStatus::Accepted,
                     SubmissionStatus::Rejected

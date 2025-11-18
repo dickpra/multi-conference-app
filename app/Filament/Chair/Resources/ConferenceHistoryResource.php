@@ -13,9 +13,17 @@ use Illuminate\Database\Eloquent\Builder;
 class ConferenceHistoryResource extends Resource
 {
     protected static ?string $model = Conference::class; // <-- Menunjuk ke model Conference
+    // protected static ?string $navigationIcon = 'heroicon-o-archive-box';
+    // protected static ?string $navigationLabel = 'Riwayat Konferensi Saya';
+    // protected static ?int $navigationSort = 10;
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-    protected static ?string $navigationLabel = 'Riwayat Konferensi Saya';
     protected static ?int $navigationSort = 10;
+
+    // HAPUS properti $navigationLabel, GANTI dengan method ini:
+    public static function getNavigationLabel(): string
+    {
+        return __('Riwayat Konferensi Saya');
+    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -33,14 +41,14 @@ class ConferenceHistoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Konferensi')
+                    ->label(__('Nama Konferensi'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('start_date')
-                    ->label('Tanggal Mulai')
+                    ->label(__('Tanggal Mulai'))
                     ->date('d M Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('my_role')
-                    ->label('Peran Saya')
+                    ->label(__('Peran Saya'))
                     ->state(function (Conference $record): string {
                         // Ambil peran user saat ini dari relasi pivot
                         $user = $record->users()->find(auth()->id());

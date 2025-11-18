@@ -6,7 +6,7 @@
     <div class="fi-in-section rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 mb-6">
         <div class="fi-in-section-header p-4">
             <h3 class="text-base font-semibold text-gray-950">
-                Putaran Review #{{ $round }}
+                Review History (Round {{ $round }})
             </h3>
         </div>
         <div class="fi-in-section-content p-6">

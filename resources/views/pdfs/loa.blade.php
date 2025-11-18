@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Letter of Acceptance</title>
@@ -61,43 +61,43 @@
 <body>
     <div class="container">
         <div class="letterhead">
-            {{-- Logo di atas --}}
+            {{-- Logo at the top --}}
             @if ($submission->conference->logo)
-                <img src="{{ public_path('storage/' . $submission->conference->logo) }}" class="logo" alt="Logo Conference">
+                <img src="{{ public_path('storage/' . $submission->conference->logo) }}" class="logo" alt="Conference Logo">
             @endif
 
-            {{-- Judul konferensi --}}
+            {{-- Conference title --}}
             <div class="conference-title">
                 <h1>{{ $submission->conference->name }}</h1>
                 <p>{{ $submission->conference->theme }}</p>
             </div>
         </div>
 
-        <p class="date">Tanggal: {{ now()->format('d F Y') }}</p>
+        <p class="date">Date: {{ now()->format('d F Y') }}</p>
 
         <div class="content">
             <p>
-                Kepada Yth.<br>
+                To Whom It May Concern:<br>
                 <strong>{{ $submission->author->name }}</strong>
             </p>
 
-            <p>Dengan hormat,</p>
+            <p>Dear **{{ $submission->author->name }}** / Distinguished Author,</p>
 
             <p>
-                Merujuk pada proses peninjauan (review) untuk makalah yang telah Anda kirimkan dengan judul:
+                Referring to the review process for the paper you submitted with the title:
             </p>
 
             <div class="paper-title">"{{ $submission->title }}"</div>
 
             <p>
-                Dengan gembira kami memberitahukan bahwa makalah Anda telah <strong>DITERIMA</strong> untuk dipresentasikan dalam <strong>{{ $submission->conference->name }}</strong>.
+                We are pleased to inform you that your paper has been <strong>ACCEPTED</strong> for presentation at the <strong>{{ $submission->conference->name }}</strong>.
             </p>
 
             <p>
-                Kami mengucapkan selamat atas pencapaian Anda dan berterima kasih atas kontribusi berharga Anda pada konferensi kami. Informasi lebih lanjut akan kami sampaikan dalam waktu dekat.
+                We congratulate you on your achievement and thank you for your valuable contribution to our conference. Further information will be provided shortly.
             </p>
 
-            <p>Hormat kami,</p>
+            <p>Sincerely,</p>
         </div>
 
         <div class="signature-block">

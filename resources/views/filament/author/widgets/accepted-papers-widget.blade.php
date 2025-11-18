@@ -1,6 +1,6 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        <h2 class="text-lg font-bold text-gray-900 mb-4">Makalah Diterima</h2>
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Paper has been Accepted</h2>
 
         @if($acceptedSubmissions->isNotEmpty())
             <div class="space-y-4">
@@ -14,13 +14,13 @@
                            target="_blank"
                            class="inline-flex items-center px-3 py-2 bg-success-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-success-700 transition">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Unduh LoA
+                            Download LoA
                         </a>
                     </div>
                 @endforeach
             </div>
         @else
-            <p class="text-sm text-gray-500">Belum ada makalah yang diterima.</p>
+            <p class="text-sm text-gray-500">No papers have been accepted yet.</p>
         @endif
 
     </x-filament::section>

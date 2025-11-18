@@ -18,10 +18,25 @@ class Dashboard extends Page implements HasTable
 {
     use InteractsWithTable;
 
+    // protected static ?string $navigationIcon = 'heroicon-o-home';
+    // protected static string $view = 'filament.reviewer.pages.dashboard';
+    // protected static ?string $title = 'Pilih Konferensi';
+    // protected ?string $subheading = 'Pilih konferensi untuk melihat tugas review Anda.';
+
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.reviewer.pages.dashboard';
-    protected static ?string $title = 'Pilih Konferensi';
-    protected ?string $subheading = 'Pilih konferensi untuk melihat tugas review Anda.';
+
+    // HAPUS properti $title dan $subheading lama, GANTI dengan method di bawah ini:
+
+    public function getTitle(): string
+    {
+        return __('Pilih Konferensi');
+    }
+
+    public function getSubheading(): ?string
+    {
+        return __('Pilih konferensi untuk melihat tugas review Anda.');
+    }
 
     protected function getHeaderWidgets(): array
     {
@@ -38,12 +53,12 @@ class Dashboard extends Page implements HasTable
                 auth()->user()->conferences()->where('role', ConferenceRole::Reviewer)->getQuery()
             )
             ->columns([
-                TextColumn::make('name')->label('Nama Konferensi')->searchable(),
-                TextColumn::make('start_date')->label('Tanggal')->date('d M Y'),
+                TextColumn::make('name')->label(__('Nama Konferensi'))->searchable(),
+                TextColumn::make('start_date')->label(__('Tanggal'))->date('d M Y'),
             ])
             ->actions([
                 Action::make('view_tasks')
-                    ->label('Lihat Tugas Review')
+                    ->label(__('Lihat Tugas Review'))
                     ->icon('heroicon-o-arrow-right-circle')
                     // Arahkan ke halaman ConferenceReview yang akan kita buat
                     ->url(fn (Conference $record): string => ConferenceReview::getUrl(['conference' => $record])),

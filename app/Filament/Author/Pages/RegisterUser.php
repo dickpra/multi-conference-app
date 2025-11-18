@@ -39,8 +39,8 @@ class RegisterUser extends BaseRegister
     protected function afterRegistration(Model $user): void
     {
         \Filament\Notifications\Notification::make()
-            ->title('Registrasi Berhasil!')
-            ->body('Akun Anda telah dibuat dan sedang menunggu persetujuan dari admin.')
+            ->title(__('registration Successful!'))
+            ->body(__('Your account has been created and is awaiting approval from the admin.'))
             ->success()
             ->send();
         

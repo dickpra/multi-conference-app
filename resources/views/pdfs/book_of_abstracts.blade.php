@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Book of Abstracts - {{ $conference->name }}</title>
@@ -37,7 +37,6 @@
     </style>
 </head>
 <body>
-    <!-- Halaman Sampul -->
     <div class="cover-page">
         @if ($conference->logo)
             <img src="{{ public_path('storage/' . $conference->logo) }}" class="logo">
@@ -54,32 +53,30 @@
     </div>
     <div class="page-break"></div>
 
-    <!-- Halaman Kata Pengantar -->
     <div>
-        <h2>{{ $conference->foreword_title ?? 'Kata Pengantar' }}</h2>
+        <h2>{{ $conference->foreword_title ?? 'Foreword' }}</h2>
 
         @if($conference->foreword)
             {!! $conference->foreword !!}
         @else
             <p>
-                Puji syukur kami panjatkan kehadirat Tuhan Yang Maha Esa atas rahmat dan karunia-Nya sehingga acara {{ $conference->name }} dapat terselenggara dengan baik. Buku abstrak ini merupakan kompilasi dari karya-karya terbaik yang telah melalui proses peninjauan ketat oleh para ahli di bidangnya.
+            Praise be to God Almighty for His blessings and grace, so that the {{ $conference->name }} event can be held successfully. This book of abstracts is a compilation of the best works that have undergone a rigorous review process by experts in their fields.
             </p>
             <p>
-                Kami mengucapkan terima kasih yang sebesar-besarnya kepada para pembicara, penulis, reviewer, dan seluruh panitia yang telah berkontribusi dalam kesuksesan acara ini. Semoga kumpulan abstrak ini dapat menjadi referensi yang berharga dan memicu inovasi lebih lanjut.
+            We would like to express our deepest gratitude to the speakers, authors, reviewers, and all committee members who have contributed to the success of this event. We hope this collection of abstracts will serve as a valuable reference and inspire further innovation.
             </p>
         @endif
 
         <br>
-        <p>Hormat kami,</p>
+        <p>Sincerely,</p>
         <br><br><br>
         <p><strong>{{ $conference->users()->where('role', 'chair')->first()->name ?? 'Conference Chair' }}</strong></p>
         <p><em>Conference Chair</em></p>
     </div>
     <div class="page-break"></div>
 
-    <!-- Halaman Daftar Isi -->
     <div>
-        <h2>Daftar Isi</h2>
+        <h2>Table of Contents</h2>
         <div class="toc">
             <ul>
                 @foreach($submissions as $submission)
@@ -96,12 +93,11 @@
     </div>
     <div class="page-break"></div>
 
-    <!-- Halaman-Halaman Abstrak -->
     @foreach($submissions as $submission)
         <div class="abstract-item">
             <h3 class="title">{{ $submission->title }}</h3>
             <p class="authors">{{ $submission->author->name }}</p>
-            <p class="affiliation">{{-- Anda bisa tambahkan afiliasi di sini jika ada --}}</p>
+            <p class="affiliation">{{-- You can add affiliation here if available --}}</p>
             <div class="abstract-body">
                 {!! $submission->abstract !!}
             </div>

@@ -17,8 +17,32 @@ class Dashboard extends Page implements HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.author.pages.dashboard';
-    protected static ?string $title = 'Dashboard';
-    protected ?string $subheading = 'Pilih konferensi untuk submit makalah atau lihat status makalah Anda.';
+    // Gunakan method ini agar fungsi translate __() bisa berjalan
+    public function getSubheading(): ?string
+    {
+        return __('Pilih konferensi untuk submit makalah atau lihat status makalah Anda.');
+    }
+
+    // Jika $title juga ingin diterjemahkan, gunakan method ini:
+    public function getTitle(): string
+    {
+        return __('Dashboard');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Dashboard');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Dashboard');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Dashboard');
+    }
 
     protected function getHeaderWidgets(): array
     {
@@ -34,27 +58,27 @@ class Dashboard extends Page implements HasTable
                 // Ambil semua konferensi, urutkan dari yang terbaru
                 Conference::query()->orderBy('start_date', 'desc')
             )
-            ->heading('Pilih Konferensi') // Judul untuk tabel
+            ->heading(__('Pilih Konferensi')) // Judul untuk tabel
             ->columns([
-                TextColumn::make('name')->label('Nama Konferensi')->searchable(),
-                
+                TextColumn::make('name')->label(__('Nama Konferensi'))->searchable(),
+
                 // --- KOLOM STATUS BARU ---
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->state(function (Conference $record): string {
-                        return now()->isAfter($record->end_date) ? 'Selesai' : 'Aktif';
+                        return now()->isAfter($record->end_date) ? __('Selesai') : __('Aktif');
                     })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Selesai' => 'gray',
-                        'Aktif' => 'success',
+                        __('Selesai') => 'gray',
+                        __('Aktif') => 'success',
                     }),
 
-                TextColumn::make('start_date')->label('Tanggal Mulai')->date('d M Y')->sortable(),
+                TextColumn::make('start_date')->label(__('Tanggal Mulai'))->date('d M Y')->sortable(),
             ])
             ->actions([
                 Action::make('select')
-                    ->label(fn (Conference $record): string => now()->isAfter($record->end_date) ? 'Lihat Arsip' : 'Lihat Detail & Submit')
+                    ->label(fn (Conference $record): string => now()->isAfter($record->end_date) ? __('Lihat Arsip') : __('Lihat Detail & Submit'))
                     ->icon('heroicon-o-arrow-right-circle')
                     ->url(fn (Conference $record): string => ConferenceDetail::getUrl(['conference' => $record])),
             ]);

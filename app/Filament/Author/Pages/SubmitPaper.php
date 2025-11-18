@@ -66,19 +66,19 @@ class SubmitPaper extends Page implements HasForms
                     ->default(fn (self $livewire) => $livewire->conference->id),
 
                 TextInput::make('title')
-                    ->label('Judul Makalah')
+                    ->label(__('Judul Makalah'))
                     ->required(),
 
                 RichEditor::make('abstract')
-                    ->label('Abstrak')
+                    ->label(__('Abstrak'))
                     ->required(),
 
                 TagsInput::make('keywords')
-                    ->label('Kata Kunci')
+                    ->label(__('Kata Kunci'))
                     ->required(),
 
                 FileUpload::make('full_paper_path')
-                    ->label('Unggah Makalah Lengkap (PDF/DOCX)')
+                    ->label(__('Unggah Makalah Lengkap (PDF/DOCX)'))
                     // Ganti directory statis dengan closure dinamis
                     ->directory(fn () => 'conferences/' . $this->conference->slug . '/full-papers')
                     ->required(),
@@ -90,7 +90,7 @@ class SubmitPaper extends Page implements HasForms
     {
         return [
             Action::make('submit')
-                ->label('Kirim Makalah')
+                ->label(__('Kirim Makalah'))
                 ->submit('submit'), // render <button type="submit">
         ];
     }
@@ -109,7 +109,7 @@ class SubmitPaper extends Page implements HasForms
         Submission::create($data);
 
         Notification::make()
-            ->title('Makalah berhasil dikirim!')
+            ->title(__('Makalah berhasil dikirim!'))
             ->success()
             ->send();
 

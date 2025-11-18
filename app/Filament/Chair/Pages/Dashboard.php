@@ -21,12 +21,12 @@ class Dashboard extends BaseDashboard
     public function getHeading(): string
     {
         $tenant = Filament::getTenant();
-        return $tenant ? $tenant->name : 'Dashboard';
+        return $tenant ? $tenant->name : (__('Dashboard'));
     }
 
     public function getSubheading(): ?string
     {
         $tenant = Filament::getTenant();
-        return $tenant ? "Lokasi: {$tenant->location}" : null;
+        return $tenant ? __("Lokasi: {$tenant->location}") : null;
     }
 }

@@ -45,22 +45,22 @@ class EditConferenceSettings extends Page implements HasForms
                     ->label('Description / Call for Paper')
                     ->columnSpanFull(),
                 FileUpload::make('paper_template_path')
-                ->label('Unggah Template Paper (DOCX, PDF)')
+                ->label(__('Unggah Template Paper (DOCX, PDF)'))
                 // Ganti directory statis dengan closure dinamis
                 ->directory(fn () => 'conferences/' . $this->getRecord()->slug . '/templates')
                 ->acceptedFileTypes(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
                 ->columnSpanFull(),
-                Section::make('Pengaturan Book of Abstracts')
-                ->description('Kustomisasi teks yang akan muncul di PDF Book of Abstracts.')
+                Section::make(__('Pengaturan Book of Abstracts'))
+                ->description(__('Kustomisasi teks yang akan muncul di PDF Book of Abstracts.'))
                 ->schema([
                     TextInput::make('book_title')
-                        ->label('Judul Utama Buku')
-                        ->placeholder('Contoh: Book of Abstracts'),
+                        ->label(__('Judul Utama Buku'))
+                        ->placeholder(__('Contoh: Book of Abstracts')),
                     TextInput::make('foreword_title')
-                        ->label('Judul Kata Pengantar')
-                        ->placeholder('Contoh: Kata Pengantar'),
+                        ->label(__('Judul Kata Pengantar'))
+                        ->placeholder(__('Contoh: Kata Pengantar')),
                     RichEditor::make('foreword')
-                        ->label('Isi Kata Pengantar'),
+                        ->label(__('Isi Kata Pengantar')),
                 ]),
                 DatePicker::make('start_date')->required(),
                 DatePicker::make('end_date')->required(),
@@ -83,7 +83,7 @@ class EditConferenceSettings extends Page implements HasForms
     {
         return [
             Action::make('save')
-                ->label(__('filament-panels::resources/pages/edit-record.form.actions.save.label'))
+                ->label(__('Simpan Perubahan'))
                 ->submit('save'),
         ];
     }

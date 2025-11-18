@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,14 +23,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center">
-                    <a href="{{ url('/') }}" class="flex items-center" aria-label="Beranda Conferex">
+                    <a href="{{ url('/') }}" class="flex items-center" aria-label="Conferex Homepage">
                         <i data-feather="book-open" class="text-indigo-600"></i>
                         <span class="ml-2 text-xl font-extrabold text-gray-900">Conferex</span>
                     </a>
                 </div>
                 <div class="flex">
                     <a href="{{ route('filament.author.pages.dashboard') }}" class="bg-indigo-600 px-4 py-2 rounded-md text-white text-sm font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Masuk / Kirim Paper
+                        Login / Submit Paper
                     </a>
                 </div>
             </div>
@@ -48,18 +48,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             <div class="lg:col-span-2 bg-white p-6 sm:p-8 rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold text-gray-900 border-b pb-4 mb-4">Deskripsi & Call for Papers</h2>
+                <h2 class="text-2xl font-bold text-gray-900 border-b pb-4 mb-4">Description & Call for Papers</h2>
                 
                 {{-- <div class="flex flex-wrap gap-4 mb-6">
                     @if($conference->paper_template_path)
                         <a href="{{ Illuminate\Support\Facades\Storage::url($conference->paper_template_path) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition">
-                            <i data-feather="download" class="mr-2 h-5 w-5"></i>Unduh Template
+                            <i data-feather="download" class="mr-2 h-5 w-5"></i>Download Template
                         </a>
                     @endif
 
                     @if(\Carbon\Carbon::parse($conference->end_date)->isAfter(now()))
                         <a href="{{ route('filament.author.pages.dashboard') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition">
-                            <i data-feather="send" class="mr-2 h-5 w-5"></i>Kirim Paper Sekarang
+                            <i data-feather="send" class="mr-2 h-5 w-5"></i>Submit Paper Now
                         </a>
                     @endif
                 </div> --}}
@@ -70,21 +70,20 @@
             </div>
 
             <aside class="lg:col-span-1 space-y-8">
-                <!-- Informasi Penting -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">Informasi Penting</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Key Information</h3>
                     <ul class="space-y-3 text-gray-700">
                         <li class="flex items-start">
                             <i data-feather="calendar" class="mt-1 mr-3 h-5 w-5 text-indigo-600 flex-shrink-0"></i>
                             <div>
-                                <span class="font-semibold">Tanggal:</span><br>
+                                <span class="font-semibold">Date:</span><br>
                                 {{ \Carbon\Carbon::parse($conference->start_date)->translatedFormat('d M') }} - {{ \Carbon\Carbon::parse($conference->end_date)->translatedFormat('d M Y') }}
                             </div>
                         </li>
                         <li class="flex items-start">
                             <i data-feather="map-pin" class="mt-1 mr-3 h-5 w-5 text-indigo-600 flex-shrink-0"></i>
                             <div>
-                                <span class="font-semibold">Lokasi:</span><br>
+                                <span class="font-semibold">Location:</span><br>
                                 {{ $conference->location }}
                             </div>
                         </li>
@@ -100,16 +99,15 @@
                     </ul>
                 </div>
 
-                <!-- Jadwal Penting -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     @if($conference->book_of_abstracts_path)
                         <a href="{{ Illuminate\Support\Facades\Storage::url($conference->book_of_abstracts_path) }}" target="_blank"
                             class="mb-6 w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
-                            <i data-feather="book-open" class="mr-2 h-5 w-5"></i>Unduh Prosiding
+                            <i data-feather="book-open" class="mr-2 h-5 w-5"></i>Download Proceedings
                         </a>
                     @endif
 
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">Jadwal Penting</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Important Dates</h3>
                     <ul class="space-y-4">
                         @forelse($conference->schedules->sortBy('date') as $schedule)
                             <li class="flex items-start">
@@ -122,26 +120,25 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="text-gray-500 text-sm">Jadwal belum tersedia.</li>
+                            <li class="text-gray-500 text-sm">Schedule is not yet available.</li>
                         @endforelse
                     </ul>
                 </div>
 
-                <!-- Kontainer Unduh Template & Kirim Paper -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Aksi Konferensi</h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Conference Actions</h3>
                     <div class="flex flex-col gap-3">
                         @if($conference->paper_template_path)
                             <a href="{{ Illuminate\Support\Facades\Storage::url($conference->paper_template_path) }}" target="_blank"
                                 class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition">
-                                <i data-feather="download" class="mr-2 h-5 w-5"></i>Unduh Template
+                                <i data-feather="download" class="mr-2 h-5 w-5"></i>Download Template
                             </a>
                         @endif
 
                         @if(\Carbon\Carbon::parse($conference->end_date)->isAfter(now()))
                             <a href="{{ route('filament.author.pages.dashboard') }}"
                                 class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition">
-                                <i data-feather="send" class="mr-2 h-5 w-5"></i>Kirim Paper Sekarang
+                                <i data-feather="send" class="mr-2 h-5 w-5"></i>Submit Paper Now
                             </a>
                         @endif
                     </div>
@@ -155,33 +152,33 @@
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Konferensi</h3>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Conferences</h3>
                     <ul class="mt-4 space-y-4">
-                        <li><a href="#upcoming" class="text-base text-gray-300 hover:text-white">Konferensi Aktif</a></li>
-                        <li><a href="#archive" class="text-base text-gray-300 hover:text-white">Arsip Konferensi</a></li>
-                        <li><a href="{{ route('filament.author.pages.dashboard') }}" class="text-base text-gray-300 hover:text-white">Kirim Paper</a></li>
+                        <li><a href="#upcoming" class="text-base text-gray-300 hover:text-white">Active Conferences</a></li>
+                        <li><a href="#archive" class="text-base text-gray-300 hover:text-white">Conference Archive</a></li>
+                        <li><a href="{{ route('filament.author.pages.dashboard') }}" class="text-base text-gray-300 hover:text-white">Submit Paper</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Tentang</h3>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">About</h3>
                     <ul class="mt-4 space-y-4">
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Misi Kami</a></li>
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Dewan Editor</a></li>
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Mitra</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Our Mission</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Editorial Board</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Partners</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Sumber Daya</h3>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Resources</h3>
                     <ul class="mt-4 space-y-4">
-                        <li><a href="{{ route('filament.author.pages.dashboard') }}#guidelines" class="text-base text-gray-300 hover:text-white">Panduan Pengajuan</a></li>
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Proses Review</a></li>
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Etika Publikasi</a></li>
+                        <li><a href="{{ route('filament.author.pages.dashboard') }}#guidelines" class="text-base text-gray-300 hover:text-white">Submission Guidelines</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Review Process</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Publication Ethics</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Terhubung</h3>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
                     <ul class="mt-4 space-y-4">
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Kontak</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
                         <li><a href="#" class="text-base text-gray-300 hover:text-white">Twitter</a></li>
                         <li><a href="#" class="text-base text-gray-300 hover:text-white">LinkedIn</a></li>
                     </ul>

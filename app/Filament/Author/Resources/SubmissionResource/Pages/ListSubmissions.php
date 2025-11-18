@@ -24,10 +24,10 @@ class ListSubmissions extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('Semua')
+            'all' => Tab::make(__('Semua'))
                 ->badge(static::getResource()::getEloquentQuery()->count()),
 
-            'in_process' => Tab::make('Dalam Proses')
+            'in_process' => Tab::make(__('Dalam Proses'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
                     SubmissionStatus::Submitted,
                     SubmissionStatus::UnderReview,
@@ -40,12 +40,12 @@ class ListSubmissions extends ListRecords
                     SubmissionStatus::RevisionRequired,
                     SubmissionStatus::RevisionSubmitted
                 ])->count()),
-            
-            'accepted' => Tab::make('Diterima')
+
+            'accepted' => Tab::make(__('Diterima'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', SubmissionStatus::Accepted))
                 ->badge(static::getResource()::getEloquentQuery()->where('status', SubmissionStatus::Accepted)->count()),
 
-            'rejected' => Tab::make('Ditolak')
+            'rejected' => Tab::make(__('Ditolak'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', SubmissionStatus::Rejected))
                 ->badge(static::getResource()::getEloquentQuery()->where('status', SubmissionStatus::Rejected)->count()),
         ];

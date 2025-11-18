@@ -31,7 +31,7 @@ class ReviewerPanelProvider extends PanelProvider
             ->id('reviewer')
             ->path('reviewer')
             ->brandName('Multi Conference - Reviewer Dashboard')
-            ->login(Login::class)
+            // ->login(Login::class)
             ->authGuard('web')
             ->colors([
                 'primary' => Color::Teal,

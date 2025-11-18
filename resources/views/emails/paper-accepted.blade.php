@@ -1,12 +1,12 @@
 <x-mail::message>
-# Selamat, {{ $submission->author->name }}!
+# Congratulations, {{ $submission->author->name }}!
 
-Kami dengan gembira memberitahukan bahwa makalah Anda yang berjudul **"{{ $submission->title }}"** telah **DITERIMA** untuk dipresentasikan di **{{ $submission->conference->name }}**.
+We are pleased to inform you that your paper titled **"{{ $submission->title }}"** has been **ACCEPTED** for presentation at **{{ $submission->conference->name }}**.
 
-Terlampir bersama email ini adalah Surat Penerimaan (Letter of Acceptance) resmi Anda.
+Attached to this email is your official Letter of Acceptance.
 
-Selamat atas pencapaian Anda!
+Congratulations on your achievement!
 
-Hormat kami,<br>
-Panitia {{ $submission->conference->name }}
+Best regards,<br>
+The {{ $submission->conference->name }} Committee
 </x-mail::message>

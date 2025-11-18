@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selamat! Makalah Anda Diterima</title>
+    <title>Congratulations! Your Paper Has Been Accepted</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -22,22 +22,22 @@
             <h1>{{ $submission->conference->name }}</h1>
         </div>
         <div class="content">
-            <h3>Selamat, {{ $submission->author->name }}!</h3>
+            <h3>Congratulations! Your Paper Has Been Accepted</h3>
             <p>
-                Kami dengan gembira memberitahukan bahwa makalah Anda yang berjudul:
+                We are pleased to inform you that your paper titled:
             </p>
             <p style="text-align: center; font-style: italic; font-weight: bold; padding: 10px; background-color: #f0f5ff; border-radius: 5px;">
                 "{{ $submission->title }}"
             </p>
             <p>
-                telah <strong>DITERIMA</strong> untuk dipresentasikan di <strong>{{ $submission->conference->name }}</strong>.
+                has been <strong>ACCEPTED</strong> for presentation at <strong>{{ $submission->conference->name }}</strong>.
             </p>
             <p>
-                Terlampir bersama email ini adalah Surat Penerimaan (Letter of Acceptance) resmi Anda. Informasi lebih lanjut akan kami sampaikan dalam waktu dekat.
+                Attached to this email is your official Letter of Acceptance. Further information will be provided shortly.
             </p>
             <p>
-                Hormat kami,<br>
-                Panitia {{ $submission->conference->name }}
+                Best regards,<br>
+                The Committee of {{ $submission->conference->name }}
             </p>
         </div>
         <div class="footer">
