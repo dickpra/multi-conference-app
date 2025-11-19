@@ -9,6 +9,8 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
+
 
 class PaperAcceptedNotification extends Mailable
 {
@@ -41,8 +43,11 @@ class PaperAcceptedNotification extends Mailable
 
     public function attachments(): array
     {
+        // Gunakan Storage facade untuk mendapatkan full path yang benar dari disk 'public'
+        $fullPath = Storage::disk('public')->path($this->pdfPath);
+
         return [
-            Attachment::fromPath(storage_path('app/' . $this->pdfPath))
+            Attachment::fromPath($fullPath)
                 ->as('Letter_of_Acceptance.pdf')
                 ->withMime('application/pdf'),
         ];

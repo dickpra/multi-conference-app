@@ -95,14 +95,22 @@ class ListSubmissions extends ListRecords
                     SubmissionStatus::RevisionRequired,
                     SubmissionStatus::RevisionSubmitted
                 ])->count()),
-
-            'finished' => Tab::make(__('Selesai'))
+            'payment_pending' => Tab::make(__('Menunggu Pembayaran / Verifikasi'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
                     SubmissionStatus::Accepted,
-                    SubmissionStatus::Rejected
+                    SubmissionStatus::PaymentSubmitted
                 ]))
                 ->badge(static::getResource()::getEloquentQuery()->whereIn('status', [
                     SubmissionStatus::Accepted,
+                    SubmissionStatus::PaymentSubmitted
+                ])->count()),
+            'finished' => Tab::make(__('Selesai'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
+                    SubmissionStatus::Paid,
+                    SubmissionStatus::Rejected
+                ]))
+                ->badge(static::getResource()::getEloquentQuery()->whereIn('status', [
+                    SubmissionStatus::Paid,
                     SubmissionStatus::Rejected
                 ])->count()),
         ];

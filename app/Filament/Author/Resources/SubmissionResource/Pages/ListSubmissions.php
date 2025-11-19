@@ -16,38 +16,55 @@ class ListSubmissions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Tombol "Create" tidak diperlukan karena submit dari halaman lain
+            // Kosong karena submit via dashboard
         ];
     }
 
-    // --- METHOD KUNCI UNTUK MEMBUAT TABS ---
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make(__('Semua'))
-                ->badge(static::getResource()::getEloquentQuery()->count()),
+            'all' => Tab::make('Semua')
+                ->badge($this->getResource()::getEloquentQuery()->count()),
 
-            'in_process' => Tab::make(__('Dalam Proses'))
+            'review_process' => Tab::make('Sedang Direview')
+                ->icon('heroicon-m-arrow-path')
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
-                    SubmissionStatus::Submitted,
+                    SubmissionStatus::Pending,
                     SubmissionStatus::UnderReview,
                     SubmissionStatus::RevisionRequired,
-                    SubmissionStatus::RevisionSubmitted
+                    SubmissionStatus::RevisionSubmitted,
                 ]))
-                ->badge(static::getResource()::getEloquentQuery()->whereIn('status', [
-                    SubmissionStatus::Submitted,
+                ->badge($this->getResource()::getEloquentQuery()->whereIn('status', [
+                    SubmissionStatus::Pending,
                     SubmissionStatus::UnderReview,
                     SubmissionStatus::RevisionRequired,
-                    SubmissionStatus::RevisionSubmitted
+                    SubmissionStatus::RevisionSubmitted,
                 ])->count()),
 
-            'accepted' => Tab::make(__('Diterima'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', SubmissionStatus::Accepted))
-                ->badge(static::getResource()::getEloquentQuery()->where('status', SubmissionStatus::Accepted)->count()),
+            'payment_process' => Tab::make('Menunggu Pembayaran / Verifikasi')
+                ->icon('heroicon-m-banknotes')
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
+                    SubmissionStatus::Accepted,         // Sudah di-ACC, belum bayar
+                    SubmissionStatus::PaymentSubmitted, // Sudah bayar, tunggu admin
+                ]))
+                ->badge($this->getResource()::getEloquentQuery()->whereIn('status', [
+                    SubmissionStatus::Accepted,
+                    SubmissionStatus::PaymentSubmitted,
+                ])->count())
+                // Beri warna badge warning agar author sadar ada tagihan
+                ->badgeColor('warning'), 
 
-            'rejected' => Tab::make(__('Ditolak'))
+            'completed' => Tab::make('Selesai (LoA)')
+                ->icon('heroicon-m-check-badge')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', SubmissionStatus::Paid))
+                ->badge($this->getResource()::getEloquentQuery()->where('status', SubmissionStatus::Paid)->count())
+                ->badgeColor('success'),
+
+            'rejected' => Tab::make('Ditolak')
+                ->icon('heroicon-m-x-circle')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', SubmissionStatus::Rejected))
-                ->badge(static::getResource()::getEloquentQuery()->where('status', SubmissionStatus::Rejected)->count()),
+                ->badge($this->getResource()::getEloquentQuery()->where('status', SubmissionStatus::Rejected)->count())
+                ->badgeColor('danger'),
         ];
     }
 }

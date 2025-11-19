@@ -10,6 +10,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+
+
 
 class Dashboard extends Page implements HasTable
 {
@@ -59,6 +63,33 @@ class Dashboard extends Page implements HasTable
                 Conference::query()->orderBy('start_date', 'desc')
             )
             ->heading(__('Pilih Konferensi')) // Judul untuk tabel
+            // --- FILTER SEBAGAI PENGGANTI TABS ---
+            ->filters([
+                SelectFilter::make('status_conference')
+                    ->label('Filter Status')
+                    ->options([
+                        'active' => 'Konferensi Aktif (Bisa Submit)',
+                        'finished' => 'Konferensi Selesai (Arsip)',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        $value = $data['value'];
+
+                        // Logika untuk "Aktif"
+                        if ($value === 'active') {
+                            return $query->where('end_date', '>=', now());
+                        }
+
+                        // Logika untuk "Selesai"
+                        if ($value === 'finished') {
+                            return $query->where('end_date', '<', now());
+                        }
+
+                        return $query;
+                    })
+                    // Opsional: Set default filter ke 'active' agar author fokus ke yang aktif dulu
+                    // ->default('active') 
+            ])
+            // -------------------------------------
             ->columns([
                 TextColumn::make('name')->label(__('Nama Konferensi'))->searchable(),
 

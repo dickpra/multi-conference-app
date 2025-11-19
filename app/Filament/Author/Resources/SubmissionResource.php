@@ -76,6 +76,10 @@ class SubmissionResource extends Resource
                                 return 'success';
                             case SubmissionStatus::Rejected:
                                 return 'danger';
+                            case SubmissionStatus::RevisionRequired:
+                                return 'info';
+                            case SubmissionStatus::Paid:
+                                return 'success';
                             default:
                                 return 'secondary';
                         }

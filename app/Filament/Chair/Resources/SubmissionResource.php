@@ -28,7 +28,9 @@ use App\Mail\PaperAcceptedNotification; // <-- Import
 use Illuminate\Support\Facades\Mail; // <-- Import
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Mail\PaperRejectedNotification; // <-- Import
-
+use App\Mail\PaymentRequiredNotification; // Buat mailable ini
+use Illuminate\Support\Facades\Storage;
+use Filament\Forms\Components\Actions\Action as FormAction; // Alias agar tidak bentrok
 
 
 class SubmissionResource extends Resource
@@ -62,7 +64,25 @@ class SubmissionResource extends Resource
                     ->label(__('Nama Penulis'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->badge(),
+                    ->badge()
+                    ->color(function ($state) {
+                        switch ($state) {
+                            case SubmissionStatus::Submitted:
+                                return 'gray';
+                            case SubmissionStatus::UnderReview:
+                                return 'warning';
+                            case SubmissionStatus::Accepted:
+                                return 'success';
+                            case SubmissionStatus::Rejected:
+                                return 'danger';
+                            case SubmissionStatus::RevisionRequired:
+                                return 'info';
+                            case SubmissionStatus::Paid:
+                                return 'success';
+                            default:
+                                return 'secondary';
+                        }
+                    }),
                     // ->color(fn (SubmissionStatus $state): string => match ($state) {
                     //     SubmissionStatus::Submitted => 'gray',
                     //     SubmissionStatus::UnderReview => 'warning',
@@ -127,6 +147,45 @@ class SubmissionResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
+            // --- TAMBAHKAN SECTION INI ---
+        \Filament\Infolists\Components\Section::make(__('Informasi Pembayaran'))
+            ->schema([
+                // 1. Nama Pengirim
+                \Filament\Infolists\Components\TextEntry::make('payment_sender_name')
+                    ->label(__('Nama Pengirim'))
+                    ->icon('heroicon-o-user'),
+
+                // 2. Status Verifikasi
+                \Filament\Infolists\Components\TextEntry::make('status')
+                    ->label(__('Status'))
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        \App\Enums\SubmissionStatus::PaymentSubmitted => 'warning',
+                        \App\Enums\SubmissionStatus::Paid => 'success',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        \App\Enums\SubmissionStatus::PaymentSubmitted => __('Perlu Verifikasi'),
+                        \App\Enums\SubmissionStatus::Paid => __('Lunas / Terverifikasi'),
+                        default => $state instanceof \App\Enums\SubmissionStatus ? $state->getLabel() : $state,
+                    }),
+
+                // 3. Tombol Lihat Bukti (Sama seperti Author)
+                \Filament\Infolists\Components\TextEntry::make('payment_proof_path')
+                    ->label(__('Bukti Transfer'))
+                    ->formatStateUsing(fn () => __('Lihat File Bukti'))
+                    ->url(fn ($record) => \Illuminate\Support\Facades\Storage::url($record->payment_proof_path))
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-eye')
+                    ->color('primary'),
+            ])
+            ->columns(3)
+            // Hanya muncul jika sudah ada pembayaran (Submitted atau Paid)
+            ->visible(fn ($record) => in_array($record->status, [
+                \App\Enums\SubmissionStatus::PaymentSubmitted, 
+                \App\Enums\SubmissionStatus::Paid
+            ])),
+        // --- BATAS AKHIR SECTION BARU ---
             // Bagian ini tetap sama
             Section::make(__('Informasi Makalah'))
                 ->headerActions([
@@ -151,32 +210,131 @@ class SubmissionResource extends Resource
                         })
                         ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
 
-                    // --- TOMBOL ACCEPT BARU ---
-                Action::make('accept')
-                    ->label('Accept')
+                    /** TOMBOL ACCEPT BARU **/
+                        
+                    Action::make('accept')
+                    ->label(__('Accept & Tagih Bayaran'))
                     ->color('success')
-                    ->icon('heroicon-o-check-circle')
-                    // --- GANTI requiresConfirmation() DENGAN INI ---
+                    ->icon('heroicon-o-currency-dollar')
                     ->requiresConfirmation()
-                    ->modalHeading(__('Accept Makalah dan Kirim LoA'))
-                    ->modalDescription(__('Apakah Anda yakin ingin menerima makalah ini? Tindakan ini akan mengirimkan Letter of Acceptance (LoA) secara otomatis kepada penulis.'))
-                    ->modalSubmitActionLabel(__('Ya, Accept dan Kirim'))
+                    ->modalDescription(__('Paper akan ditandai "Accepted". Author akan menerima email instruksi pembayaran. LoA BELUM akan dikirim.'))
                     ->action(function (Submission $record) {
-                        // 1. Buat PDF dari view dan simpan ke storage
-                        $pdf = PDF::loadView('pdfs.loa', ['submission' => $record]);
-                        $pdfPath = 'public/loas/loa_' . $record->id . '_' . time() . '.pdf';
-                        \Illuminate\Support\Facades\Storage::put($pdfPath, $pdf->output());
-
-                        // 2. Kirim email ke penulis dengan PDF sebagai lampiran
-                        Mail::to($record->author->email)->send(new PaperAcceptedNotification($record, $pdfPath));
-
-                        // 3. Update status makalah
+                        // 1. Update Status ke Accepted (Menunggu Bayar)
                         $record->update(['status' => SubmissionStatus::Accepted]);
 
-                        Notification::make()->title(__('Makalah telah di-Accept dan LoA telah dikirim ke penulis'))->success()->send();
-                    })
-                    ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
+                        // 2. Kirim Email Tagihan
+                        // Pastikan mailable ini memuat data bank dari $record->conference
+                        Mail::to($record->author->email)->send(new PaymentRequiredNotification($record));
 
+                        Notification::make()->title(__('Paper diterima. Notifikasi pembayaran dikirim ke Author.'))->success()->send();
+                    })
+                    ->visible(fn (Submission $record) => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
+                    // --- TOMBOL ACCEPT LAMA ---
+                    // Action::make('accept')
+                    //     ->label('Accept')
+                    //     ->color('success')
+                    //     ->icon('heroicon-o-check-circle')
+                    //     // --- GANTI requiresConfirmation() DENGAN INI ---
+                    //     ->requiresConfirmation()
+                    //     ->modalHeading(__('Accept Makalah dan Kirim LoA'))
+                    //     ->modalDescription(__('Apakah Anda yakin ingin menerima makalah ini? Tindakan ini akan mengirimkan Letter of Acceptance (LoA) secara otomatis kepada penulis.'))
+                    //     ->modalSubmitActionLabel(__('Ya, Accept dan Kirim'))
+                    //     ->action(function (Submission $record) {
+                    //         // 1. Buat PDF dari view dan simpan ke storage
+                    //         $pdf = PDF::loadView('pdfs.loa', ['submission' => $record]);
+                    //         $pdfPath = 'public/loas/loa_' . $record->id . '_' . time() . '.pdf';
+                    //         \Illuminate\Support\Facades\Storage::put($pdfPath, $pdf->output());
+
+                    //         // 2. Kirim email ke penulis dengan PDF sebagai lampiran
+                    //         Mail::to($record->author->email)->send(new PaperAcceptedNotification($record, $pdfPath));
+
+                    //         // 3. Update status makalah
+                    //         $record->update(['status' => SubmissionStatus::Accepted]);
+
+                    //         Notification::make()->title(__('Makalah telah di-Accept dan LoA telah dikirim ke penulis'))->success()->send();
+                    //     })
+                    //     ->visible(fn (Submission $record): bool => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
+
+
+                    Action::make('verify_payment')
+                    ->label(__('Verifikasi & Kirim LoA'))
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading(__('Konfirmasi Pembayaran'))
+                    ->modalDescription(__('Pastikan data pembayaran valid sebelum menyetujui.'))
+
+                    // --- 1. FORM DI DALAM MODAL ---
+                    ->form([
+                        // Field Nama Pengirim (Read Only)
+                        \Filament\Forms\Components\TextInput::make('payment_sender_name')
+                            ->label(__('Nama Pengirim (Sesuai Rekening)'))
+                            ->disabled() // Tidak bisa diedit
+                            ->dehydrated(false), // Tidak perlu disimpan ulang
+
+                        // Field Gambar Bukti
+                        \Filament\Forms\Components\FileUpload::make('payment_proof_path')
+                            ->label(__('Bukti Transfer'))
+                            ->image()
+                            ->imagePreviewHeight('250')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->columnSpanFull()
+                            // Tombol Lihat Full
+                            ->hintAction(
+                                \Filament\Forms\Components\Actions\Action::make('view_full_proof')
+                                    ->label(__('Buka Gambar Penuh'))
+                                    ->icon('heroicon-m-arrow-top-right-on-square')
+                                    ->url(fn ($record) => \Illuminate\Support\Facades\Storage::url($record->payment_proof_path))
+                                    ->openUrlInNewTab()
+                            ),
+                    ])
+                    
+                    // --- 2. PENTING: ISI DATA KE FORM ---
+                    ->mountUsing(fn ($form, $record) => $form->fill([
+                        'payment_sender_name' => $record->payment_sender_name,
+                        'payment_proof_path' => $record->payment_proof_path,
+                    ]))
+
+                    // --- ACTION ---
+                    ->action(function (Submission $record) {
+                        // 1. Konten LoA Standar
+                        $standardContent = '
+                            <p>Kepada Yth. <strong>' . $record->author->name . '</strong>,</p>
+                            <p>Dengan hormat,</p>
+                            <p>Kami dengan senang hati menginformasikan bahwa makalah Anda yang berjudul:</p>
+                            <p style="text-align: center; font-weight: bold; font-style: italic; margin: 20px 0;">"' . $record->title . '"</p>
+                            <p>Telah <strong>DITERIMA (ACCEPTED)</strong> untuk dipresentasikan pada <strong>' . $record->conference->name . '</strong>.</p>
+                            <p>Kami juga mengonfirmasi bahwa pembayaran biaya registrasi Anda telah kami terima.</p>
+                            <p>Terima kasih atas partisipasi Anda, dan sampai jumpa di acara kami.</p>
+                        ';
+                        
+                        // 2. Generate PDF
+                        $pdf = Pdf::loadView('pdfs.loa', [
+                            'submission' => $record,
+                            'content'    => $standardContent 
+                        ]);
+
+                        // 3. Tentukan Path Penyimpanan (Relatif terhadap disk 'public')
+                        // Contoh hasil: conferences/ai-2025/loas/loa_123.pdf
+                        $fileName = 'loa_' . $record->id . '_' . time() . '.pdf';
+                        $relativePath = 'conferences/' . $record->conference->slug . '/loas/' . $fileName;
+                        
+                        // 4. Simpan File ke Disk Public
+                        Storage::disk('public')->put($relativePath, $pdf->output());
+
+                        // 5. Kirim Email (Kirim relative path, nanti Mailable yang ubah jadi full path)
+                        Mail::to($record->author->email)->send(new PaperAcceptedNotification($record, $relativePath));
+
+                        // 6. Update Database
+                        $record->update([
+                            'status' => SubmissionStatus::Paid,
+                            'loa_path' => $relativePath,
+                        ]);
+
+                        Notification::make()->title(__('Pembayaran diverifikasi. LoA telah dikirim ke Author.'))->success()->send();
+                    })
+                    ->visible(fn (Submission $record) => $record->status === SubmissionStatus::PaymentSubmitted),
                 // --- TOMBOL REJECT BARU ---
                 Action::make('reject')
                     ->label('Reject')

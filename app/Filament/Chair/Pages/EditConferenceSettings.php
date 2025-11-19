@@ -65,9 +65,51 @@ class EditConferenceSettings extends Page implements HasForms
                 DatePicker::make('start_date')->required(),
                 DatePicker::make('end_date')->required(),
                 FileUpload::make('logo')
-                ->image()
-                ->directory(fn () => 'conferences/' . $this->getRecord()->slug . '/logos'),
+                    ->image()
+                    ->directory(fn () => 'conferences/' . $this->getRecord()->slug . '/logos'),
                 TextInput::make('isbn_issn'),
+                Section::make(__('Informasi Pembayaran & Rekening'))
+                    ->description(__('Data ini akan ditampilkan ke Author setelah paper mereka diterima.'))
+                    ->schema([
+                        TextInput::make('registration_fee')
+                            ->label(__('Biaya Pendaftaran (Rp)'))
+                            ->prefix('Rp')
+                            ->extraAttributes(['class' => 'text-right'])
+                            
+                            // Format ke Rupiah saat tampil di form
+                            ->formatStateUsing(function ($state) {
+                                if (!$state) return null;
+
+                                return number_format((float) $state, 0, ',', '.'); 
+                            })
+
+                            // Simpan sebagai angka murni (hilangkan titik)
+                            ->dehydrateStateUsing(function ($state) {
+                                if (!$state) return 0;
+
+                                // Hapus tanda titik
+                                $raw = str_replace('.', '', $state);
+                                // Ubah koma menjadi titik untuk desimal
+                                $raw = str_replace(',', '.', $raw);
+
+                                return is_numeric($raw) ? $raw : 0;
+                            })
+
+                            // Penting: tetap kirimkan data ke server meski disunting
+                            ->dehydrated(true),
+
+                        TextInput::make('bank_name')
+                            ->label(__('Nama Bank'))
+                            ->placeholder(__('Contoh: Bank Mandiri')),
+
+                        TextInput::make('bank_account_number')
+                            ->label(__('Nomor Rekening')),
+
+                        TextInput::make('bank_account_holder')
+                            ->label(__('Atas Nama')),
+                    ])
+                    ->columns(2),
+
             ])
             ->statePath('data')
             ->model($this->getRecord());
