@@ -147,6 +147,99 @@ class SubmissionResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
+            // --- TAMBAHAN: ARSIP DOKUMEN ADMINISTRASI ---
+        \Filament\Infolists\Components\Section::make('Arsip Dokumen Resmi')
+            ->icon('heroicon-m-folder-open')
+            ->collapsible()
+            ->description(__('Kumpulan dokumen legal (Invoice & LoA) yang telah digenerate oleh sistem untuk makalah ini.'))
+            ->schema([
+                \Filament\Infolists\Components\Grid::make(2)
+                    ->schema([
+                        // 1. DOWNLOAD INVOICE
+                        \Filament\Infolists\Components\Group::make([
+                            \Filament\Infolists\Components\TextEntry::make('invoice_number')
+                                ->label('Nomor Invoice')
+                                ->icon('heroicon-m-hashtag')
+                                ->copyable(),
+                            
+                            \Filament\Infolists\Components\TextEntry::make('invoice_path')
+                                ->label('File Invoice')
+                                ->formatStateUsing(fn ($record) => 
+                                    $record->status === \App\Enums\SubmissionStatus::Paid 
+                                    ? __('Download Kuitansi Lunas (PAID)')
+                                    : __('Download Invoice (TAGIHAN)')
+                                )
+                                // Tambahkan time() agar tidak kena cache browser saat status berubah
+                                ->url(fn ($record) => \Illuminate\Support\Facades\Storage::url($record->invoice_path) . '?t=' . time())
+                                ->openUrlInNewTab()
+                                ->color(fn ($record) => 
+                                    $record->status === \App\Enums\SubmissionStatus::Paid ? 'success' : 'warning'
+                                )
+                                ->icon('heroicon-o-document-currency-dollar'),
+                        ])->visible(fn ($record) => !empty($record->invoice_path)),
+
+                        // 2. DOWNLOAD LOA
+                        \Filament\Infolists\Components\Group::make([
+                            \Filament\Infolists\Components\TextEntry::make('status')
+                                ->label('Status LoA')
+                                ->formatStateUsing(fn() => 'Telah Terbit')
+                                ->badge()
+                                ->color('success'),
+
+                            \Filament\Infolists\Components\TextEntry::make('loa_path')
+                                ->label('File Letter of Acceptance')
+                                ->formatStateUsing(fn () => '📄 Download Dokumen LoA')
+                                ->url(fn ($record) => \Illuminate\Support\Facades\Storage::url($record->loa_path))
+                                ->openUrlInNewTab()
+                                ->color('primary')
+                                ->icon('heroicon-o-document-check'),
+                        ])->visible(fn ($record) => !empty($record->loa_path)),
+                    ]),
+            ])
+            // Section ini hanya muncul jika minimal Invoice sudah dibuat
+            ->visible(fn ($record) => !empty($record->invoice_path)),
+        // ---------------------------------------------------
+            // --- TAMBAHAN: INFORMASI MENUNGGU PEMBAYARAN ---
+        \Filament\Infolists\Components\Section::make(__('Status Administrasi: Menunggu Pembayaran'))
+            ->icon('heroicon-m-clock') // Ikon jam
+            ->description(__('Paper ini telah di-Accept. Sistem sedang menunggu Author mengunggah bukti transfer.'))
+            ->schema([
+                \Filament\Infolists\Components\Grid::make(3)
+                    ->schema([
+                        // 1. Nominal Tagihan (Highlight Besar)
+                        \Filament\Infolists\Components\TextEntry::make('conference.registration_fee')
+                            ->label(__('Tagihan ke Author'))
+                            ->money('IDR')
+                            ->size(\Filament\Infolists\Components\TextEntry\TextEntrySize::Large)
+                            ->weight('bold')
+                            ->color('danger'),
+
+                        // 2. Nomor Invoice
+                        \Filament\Infolists\Components\TextEntry::make('invoice_number')
+                            ->label(__('No. Invoice'))
+                            ->icon('heroicon-m-document-text')
+                            ->copyable()
+                            ->placeholder(__('Belum digenerate')),
+
+                        // 3. Info Rekening (Reminder untuk Admin)
+                        \Filament\Infolists\Components\Group::make([
+                            \Filament\Infolists\Components\TextEntry::make('conference.bank_name')
+                                ->label(__('Bank Tujuan'))
+                                ->weight('bold'),
+                            \Filament\Infolists\Components\TextEntry::make('conference.bank_account_number')
+                                ->label(__('No. Rekening')),
+                        ]),
+                    ]),
+                
+                // Pesan Helper Visual
+                \Filament\Infolists\Components\ViewEntry::make('waiting_alert')
+                    ->columnSpanFull()
+                    ->view('filament.infolists.components.waiting-payment-alert'), 
+                    // Kita akan buat view kecil ini di bawah agar lebih cantik
+            ])
+            // Hanya muncul jika status = Accepted (Sudah terima tapi belum upload bukti)
+            ->visible(fn ($record) => $record->status === \App\Enums\SubmissionStatus::Accepted),
+        // ---------------------------------------------------
             // --- TAMBAHKAN SECTION INI ---
         \Filament\Infolists\Components\Section::make(__('Informasi Pembayaran'))
             ->schema([
@@ -213,22 +306,43 @@ class SubmissionResource extends Resource
                     /** TOMBOL ACCEPT BARU **/
                         
                     Action::make('accept')
-                    ->label(__('Accept & Tagih Bayaran'))
+                    ->label('Accept & Generate Invoice')
                     ->color('success')
-                    ->icon('heroicon-o-currency-dollar')
+                    ->icon('heroicon-o-document-currency-dollar')
                     ->requiresConfirmation()
-                    ->modalDescription(__('Paper akan ditandai "Accepted". Author akan menerima email instruksi pembayaran. LoA BELUM akan dikirim.'))
-                    ->action(function (Submission $record) {
-                        // 1. Update Status ke Accepted (Menunggu Bayar)
-                        $record->update(['status' => SubmissionStatus::Accepted]);
+                    ->modalHeading(__('Terima Paper & Buat Invoice'))
+                                ->modalDescription(__('Paper akan ditandai "Accepted". Invoice PDF akan dibuat otomatis dan dikirim ke Author.'))
+                                ->action(function (Submission $record) {
+                        
+                        // 1. Generate Nomor Invoice
+                        $invoiceNumber = 'INV/' . date('Y') . '/' . $record->conference_id . '/' . $record->id;
 
-                        // 2. Kirim Email Tagihan
-                        // Pastikan mailable ini memuat data bank dari $record->conference
-                        Mail::to($record->author->email)->send(new PaymentRequiredNotification($record));
+                        // 2. UPDATE DATA: PENTING! Status harus 'Accepted', BUKAN 'Paid'
+                        $record->update([
+                            'status' => \App\Enums\SubmissionStatus::Accepted, // <--- PASTIKAN INI BENAR
+                            'invoice_number' => $invoiceNumber,
+                        ]);
 
-                        Notification::make()->title(__('Paper diterima. Notifikasi pembayaran dikirim ke Author.'))->success()->send();
+                        // 3. Buat PDF Invoice
+                        // Karena statusnya baru saja diupdate jadi 'Accepted', 
+                        // maka di dalam PDF logikanya akan mencetak cap "UNPAID".
+                        $pdf = Pdf::loadView('pdfs.invoice', ['submission' => $record]);
+                        
+                        // 4. Simpan PDF
+                        $fileName = 'invoice_' . $record->id . '_' . time() . '.pdf';
+                        $relativePath = 'conferences/' . $record->conference->slug . '/invoices/' . $fileName;
+                        
+                        Storage::disk('public')->put($relativePath, $pdf->output());
+
+                        // 5. Simpan Path Invoice
+                        $record->update(['invoice_path' => $relativePath]);
+
+                        // 6. Kirim Email Tagihan
+                        Mail::to($record->author->email)->send(new PaymentRequiredNotification($record, $relativePath));
+
+                        Notification::make()->title(__('Paper diterima. Invoice dibuat (UNPAID) & dikirim.'))->success()->send();
                     })
-                    ->visible(fn (Submission $record) => in_array($record->status, [SubmissionStatus::UnderReview, SubmissionStatus::RevisionSubmitted])),
+                    ->visible(fn (Submission $record) => in_array($record->status, [\App\Enums\SubmissionStatus::UnderReview, \App\Enums\SubmissionStatus::RevisionSubmitted])),
                     // --- TOMBOL ACCEPT LAMA ---
                     // Action::make('accept')
                     //     ->label('Accept')
@@ -331,6 +445,27 @@ class SubmissionResource extends Resource
                             'status' => SubmissionStatus::Paid,
                             'loa_path' => $relativePath,
                         ]);
+
+                        $record->update(['status' => \App\Enums\SubmissionStatus::Paid]);
+
+                        // --- TAMBAHAN PENTING: REFRESH DATA ---
+                        // Ini memastikan variabel $record benar-benar membawa status 'Paid' saat dikirim ke PDF
+                        $record->refresh(); 
+                        // ---------------------------------------
+
+                        // 2. RE-GENERATE INVOICE (Sekarang pasti membawa status Paid)
+                        $pdfInvoice = Pdf::loadView('pdfs.invoice', ['submission' => $record]);
+                        
+                        // Cek path, jika kosong buat baru (logika fallback)
+                        $invoicePath = $record->invoice_path;
+                        if (empty($invoicePath)) {
+                            $fileName = 'invoice_' . $record->id . '_' . time() . '.pdf';
+                            $invoicePath = 'conferences/' . $record->conference->slug . '/invoices/' . $fileName;
+                            $record->update(['invoice_path' => $invoicePath]);
+                        }
+
+                        // TIMPA FILE LAMA DENGAN YANG BARU
+                        Storage::disk('public')->put($invoicePath, $pdfInvoice->output());
 
                         Notification::make()->title(__('Pembayaran diverifikasi. LoA telah dikirim ke Author.'))->success()->send();
                     })

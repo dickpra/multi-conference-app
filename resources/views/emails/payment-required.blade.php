@@ -35,30 +35,75 @@
             <p>To proceed with the final registration and receive your Letter of Acceptance (LoA), please complete the registration fee payment.</p>
 
             <div class="payment-box">
-                <h3>Payment Details</h3>
-                <div class="payment-details">
-                    <table>
-                        <tr>
-                            <td>Amount:</td>
-                            <td style="font-size: 18px; color: #d32f2f;">
-                                <strong>Rp {{ number_format($submission->conference->registration_fee, 0, ',', '.') }}</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Bank Name:</td>
-                            <td>{{ $submission->conference->bank_name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td>Account No.:</td>
-                            <td><strong>{{ $submission->conference->bank_account_number ?? '-' }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Account Holder:</td>
-                            <td>{{ $submission->conference->bank_account_holder ?? '-' }}</td>
-                        </tr>
-                    </table>
-                </div>
+            <h3>Payment Details / Invoice Info</h3>
+            <div class="payment-details">
+                <table style="width: 100%; border-collapse: collapse;">
+                    {{-- Total --}}
+                    <tr>
+                        <td style="padding: 8px 0; font-weight: bold; width: 150px;">Amount to Pay:</td>
+                        <td style="padding: 8px 0; font-size: 18px; color: #d32f2f;">
+                            <strong>Rp {{ number_format($submission->conference->registration_fee, 0, ',', '.') }}</strong>
+                        </td>
+                    </tr>
+
+                    {{-- VAT (Jika ada) --}}
+                    @if($submission->conference->vat_number)
+                    <tr>
+                        <td style="padding: 5px 0; color: #666;">VAT Number:</td>
+                        <td style="padding: 5px 0;">{{ $submission->conference->vat_number }}</td>
+                    </tr>
+                    @endif
+
+                    <tr><td colspan="2"><hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;"></td></tr>
+
+                    {{-- Detail Bank --}}
+                    <tr>
+                        <td style="padding: 5px 0; color: #666;">Bank Name:</td>
+                        <td style="padding: 5px 0;"><strong>{{ $submission->conference->bank_name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0; color: #666;">Account Number:</td>
+                        <td style="padding: 5px 0; font-size: 16px;"><strong>{{ $submission->conference->bank_account_number }}</strong></td>
+                    </tr>
+                    
+                    {{-- SWIFT (Jika ada) --}}
+                    @if($submission->conference->swift_code)
+                    <tr>
+                        <td style="padding: 5px 0; color: #666;">SWIFT / BIC Code:</td>
+                        <td style="padding: 5px 0;"><strong>{{ $submission->conference->swift_code }}</strong></td>
+                    </tr>
+                    @endif
+
+                    <tr>
+                        <td style="padding: 5px 0; color: #666;">Account Holder:</td>
+                        <td style="padding: 5px 0;">{{ $submission->conference->bank_account_holder }}</td>
+                    </tr>
+
+                    {{-- Alamat Bank Holder (Jika ada) --}}
+                    @if($submission->conference->bank_account_address)
+                    <tr>
+                        <td style="padding: 5px 0; color: #666; vertical-align: top;">Holder Address:</td>
+                        <td style="padding: 5px 0;">
+                            {!! nl2br(e($submission->conference->bank_account_address)) !!}<br>
+                            {{ $submission->conference->bank_city ?? '' }}
+                        </td>
+                    </tr>
+                    @endif
+
+                    <tr><td colspan="2"><hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;"></td></tr>
+
+                    {{-- Alamat Pos Organisasi (Jika ada) --}}
+                    @if($submission->conference->postal_address)
+                    <tr>
+                        <td style="padding: 5px 0; color: #666; vertical-align: top;">Postal Address:</td>
+                        <td style="padding: 5px 0; font-size: 13px; color: #555;">
+                            {!! nl2br(e($submission->conference->postal_address)) !!}
+                        </td>
+                    </tr>
+                    @endif
+                </table>
             </div>
+        </div>
 
             <p><strong>Next Steps:</strong></p>
             <ol>

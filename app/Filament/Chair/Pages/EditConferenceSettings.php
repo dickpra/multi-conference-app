@@ -15,7 +15,10 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Section;
-
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Textarea;
+use App\Enums\Sdg;
+use Filament\Forms\Components\TagsInput;
 
 class EditConferenceSettings extends Page implements HasForms
 {
@@ -38,77 +41,101 @@ class EditConferenceSettings extends Page implements HasForms
     {
         return $form
             ->schema([
+                
                 TextInput::make('name')->required(),
                 TextInput::make('theme'),
                 TextInput::make('location'),
                 RichEditor::make('description')
                     ->label('Description / Call for Paper')
                     ->columnSpanFull(),
+               // --- GANTI SELECT LAMA DENGAN INI ---
+                    TagsInput::make('sdgs')
+                        ->label(__('Fokus SDGs'))
+                        ->placeholder(__('Pilih dari daftar atau ketik SDG custom baru...'))
+                        // Ambil daftar teks dari Enum sebagai saran
+                        ->suggestions(
+                            collect(Sdg::cases())
+                                ->map(fn ($sdg) => $sdg->getLabel())
+                                ->values()
+                                ->toArray()
+                        )
+                        ->columnSpanFull(),
+                    // ------------------------------------
                 FileUpload::make('paper_template_path')
-                ->label(__('Unggah Template Paper (DOCX, PDF)'))
-                // Ganti directory statis dengan closure dinamis
-                ->directory(fn () => 'conferences/' . $this->getRecord()->slug . '/templates')
-                ->acceptedFileTypes(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
-                ->columnSpanFull(),
+                    ->label(__('Unggah Template Paper (DOCX, PDF)'))
+                    // Ganti directory statis dengan closure dinamis
+                    ->directory(fn () => 'conferences/' . $this->getRecord()->slug . '/templates')
+                    ->acceptedFileTypes(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+                    ->columnSpanFull(),
                 Section::make(__('Pengaturan Book of Abstracts'))
-                ->description(__('Kustomisasi teks yang akan muncul di PDF Book of Abstracts.'))
-                ->schema([
-                    TextInput::make('book_title')
-                        ->label(__('Judul Utama Buku'))
-                        ->placeholder(__('Contoh: Book of Abstracts')),
-                    TextInput::make('foreword_title')
-                        ->label(__('Judul Kata Pengantar'))
-                        ->placeholder(__('Contoh: Kata Pengantar')),
-                    RichEditor::make('foreword')
-                        ->label(__('Isi Kata Pengantar')),
-                ]),
+                    ->description(__('Kustomisasi teks yang akan muncul di PDF Book of Abstracts.'))
+                    ->schema([
+                        TextInput::make('book_title')
+                            ->label(__('Judul Utama Buku'))
+                            ->placeholder(__('Contoh: Book of Abstracts')),
+                        TextInput::make('foreword_title')
+                            ->label(__('Judul Kata Pengantar'))
+                            ->placeholder(__('Contoh: Kata Pengantar')),
+                        RichEditor::make('foreword')
+                            ->label(__('Isi Kata Pengantar')),
+                    ]),
                 DatePicker::make('start_date')->required(),
                 DatePicker::make('end_date')->required(),
                 FileUpload::make('logo')
                     ->image()
                     ->directory(fn () => 'conferences/' . $this->getRecord()->slug . '/logos'),
                 TextInput::make('isbn_issn'),
-                Section::make(__('Informasi Pembayaran & Rekening'))
-                    ->description(__('Data ini akan ditampilkan ke Author setelah paper mereka diterima.'))
+                Section::make(__('Informasi Pembayaran & Rekening (Internasional)'))
+                    ->description(__('Lengkapi data ini untuk memudahkan pembayaran dari dalam dan luar negeri.'))
                     ->schema([
                         TextInput::make('registration_fee')
                             ->label(__('Biaya Pendaftaran (Rp)'))
+                            ->numeric()
                             ->prefix('Rp')
-                            ->extraAttributes(['class' => 'text-right'])
-                            
-                            // Format ke Rupiah saat tampil di form
-                            ->formatStateUsing(function ($state) {
-                                if (!$state) return null;
+                            ->required(),
 
-                                return number_format((float) $state, 0, ',', '.'); 
-                            })
+                        // --- DETAIL ORGANISASI ---
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('vat_number')
+                                    ->label(__('VAT Number (NPWP)'))
+                                    ->placeholder(__('Optional untuk lokal')),
+                                
+                                Textarea::make('postal_address')
+                                    ->label(__('Alamat Pos Organisasi'))
+                                    ->rows(3)
+                                    ->columnSpanFull(),
+                            ]),
 
-                            // Simpan sebagai angka murni (hilangkan titik)
-                            ->dehydrateStateUsing(function ($state) {
-                                if (!$state) return 0;
+                        // --- DETAIL BANK ---
+                        Section::make(__('Detail Rekening Bank'))
+                            ->schema([
+                                TextInput::make('bank_name')
+                                    ->label(__('Nama Bank'))
+                                    ->required(),
+                                
+                                TextInput::make('swift_code')
+                                    ->label(__('SWIFT / BIC Code'))
+                                    ->placeholder(__('Wajib untuk transfer internasional'))
+                                    ->helperText(__('Kosongkan jika hanya menerima transfer lokal')),
 
-                                // Hapus tanda titik
-                                $raw = str_replace('.', '', $state);
-                                // Ubah koma menjadi titik untuk desimal
-                                $raw = str_replace(',', '.', $raw);
+                                TextInput::make('bank_account_number')
+                                    ->label(__('Nomor Rekening'))
+                                    ->required(),
 
-                                return is_numeric($raw) ? $raw : 0;
-                            })
+                                TextInput::make('bank_account_holder')
+                                    ->label(__('Nama Pemilik Rekening'))
+                                    ->required(),
 
-                            // Penting: tetap kirimkan data ke server meski disunting
-                            ->dehydrated(true),
+                                TextInput::make('bank_city')
+                                    ->label(__('Kota Bank')),
 
-                        TextInput::make('bank_name')
-                            ->label(__('Nama Bank'))
-                            ->placeholder(__('Contoh: Bank Mandiri')),
-
-                        TextInput::make('bank_account_number')
-                            ->label(__('Nomor Rekening')),
-
-                        TextInput::make('bank_account_holder')
-                            ->label(__('Atas Nama')),
-                    ])
-                    ->columns(2),
+                                Textarea::make('bank_account_address')
+                                    ->label(__('Alamat Terdaftar Pemilik Rekening'))
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+                            ])->columns(2),
+                    ]),
 
             ])
             ->statePath('data')

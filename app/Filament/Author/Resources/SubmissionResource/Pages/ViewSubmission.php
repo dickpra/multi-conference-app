@@ -13,7 +13,7 @@ use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Infolists\Components\ViewEntry;
-
+use Filament\Infolists\Components\TextEntry;
 
 
 class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan Trait ini
@@ -98,28 +98,99 @@ class ViewSubmission extends ViewRecord implements HasInfolists // <-- Gunakan T
         return $infolist
             ->record($this->getRecord())
             ->schema([
-                \Filament\Infolists\Components\Section::make(__('Instruksi Pembayaran'))
+                \Filament\Infolists\Components\Section::make(__('Dokumen Administrasi'))
+                ->schema([
+                    // 1. Tombol Download Invoice (Muncul di kedua kondisi)
+                    \Filament\Infolists\Components\TextEntry::make('invoice_path')
+                        ->label(__('Invoice / Bukti Pembayaran'))
+                        ->formatStateUsing(fn ($record) => 
+                            $record->status === \App\Enums\SubmissionStatus::Paid 
+                            ? __('Download Kuitansi Lunas (PAID)') 
+                            : __('Download Tagihan (UNPAID)')
+                        )
+                        ->url(fn ($record) => \Illuminate\Support\Facades\Storage::url($record->invoice_path))
+                        ->openUrlInNewTab()
+                        ->icon('heroicon-o-document-currency-dollar')
+                        ->color(fn ($record) => 
+                            $record->status === \App\Enums\SubmissionStatus::Paid ? 'success' : 'warning'
+                        ),
+
+                    // 2. Tombol Download LoA (Hanya muncul jika Paid)
+                    \Filament\Infolists\Components\TextEntry::make('loa_path')
+                        ->label('Letter of Acceptance (LoA)')
+                        ->formatStateUsing(fn () => 'Download Dokumen LoA')
+                        ->url(fn ($record) => \Illuminate\Support\Facades\Storage::url($record->loa_path))
+                        ->openUrlInNewTab()
+                        ->icon('heroicon-o-document-check')
+                        ->color('primary')
+                        ->visible(fn ($record) => $record->status === \App\Enums\SubmissionStatus::Paid),
+                ])
+                ->columns(2)
+                // Section ini muncul jika sudah tahap pembayaran atau selesai
+                ->visible(fn ($record) => in_array($record->status, [
+                    \App\Enums\SubmissionStatus::Accepted,
+                    \App\Enums\SubmissionStatus::PaymentSubmitted,
+                    \App\Enums\SubmissionStatus::Paid
+                ])),
+                \Filament\Infolists\Components\Section::make(__(('Instruksi Pembayaran')))
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('conference.bank_name')
-                            ->label(__('Bank')),
+                            // --- TAMBAHAN: Link Download Invoice ---
+                \Filament\Infolists\Components\TextEntry::make('invoice_number')
+                    ->label(__('Nomor Invoice'))
+                    ->weight('bold')
+                    ->copyable(),
 
-                        \Filament\Infolists\Components\TextEntry::make('conference.bank_account_number')
-                            ->label(__('No. Rekening'))
-                            ->copyable(),
+                \Filament\Infolists\Components\TextEntry::make('invoice_path')
+                    ->label(__('Dokumen Tagihan'))
+                    ->formatStateUsing(fn () => __('Download Invoice Resmi (PDF)'))
+                    ->url(fn ($record) => \Illuminate\Support\Facades\Storage::url($record->invoice_path))
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('primary')
+                    ->columnSpanFull(), // Biar lebar penuh di bawah info bank
+                    // Baris 1: Nominal & VAT
+                    \Filament\Infolists\Components\TextEntry::make('conference.registration_fee')
+                        ->label(__('TOTAL TAGIHAN'))
+                        ->money('IDR')
+                        ->weight('bold')
+                        ->size(TextEntry\TextEntrySize::Large)
+                        ->color('danger'),
+                    
+                    \Filament\Infolists\Components\TextEntry::make('conference.vat_number')
+                        ->label(__('VAT Number'))
+                        ->visible(fn ($record) => !empty($record->conference->vat_number)),
 
-                        \Filament\Infolists\Components\TextEntry::make('conference.bank_account_holder')
-                            ->label(__('Atas Nama')),
+                    // Baris 2: Detail Bank Utama
+                    \Filament\Infolists\Components\TextEntry::make('conference.bank_name')
+                        ->label('Bank Name'),
+                    \Filament\Infolists\Components\TextEntry::make('conference.bank_account_number')
+                        ->label('Account Number')
+                        ->copyable()
+                        ->weight('bold'),
+                    \Filament\Infolists\Components\TextEntry::make('conference.swift_code')
+                        ->label('SWIFT / BIC Code')
+                        ->visible(fn ($record) => !empty($record->conference->swift_code)),
 
-                        \Filament\Infolists\Components\TextEntry::make('conference.registration_fee')
-                            ->label(__('Nominal yang Harus Dibayar'))
-                            ->formatStateUsing(fn ($state) =>
-                                $state !== null
-                                    ? 'Rp ' . number_format((float) $state, 0, ',', '.')
-                                    : '-'
-                            ),
-                        ])
-                    ->columns(2)
-                    ->visible(fn ($record) => $record->status === \App\Enums\SubmissionStatus::Accepted),
+                    // Baris 3: Detail Pemilik
+                    \Filament\Infolists\Components\TextEntry::make('conference.bank_account_holder')
+                        ->label('Account Holder Name'),
+                    \Filament\Infolists\Components\TextEntry::make('conference.bank_city')
+                        ->label('City'),
+                    
+                    // Baris 4: Alamat Lengkap (Full Width)
+                    \Filament\Infolists\Components\TextEntry::make('conference.bank_account_address')
+                        ->label('Account Holder Address')
+                        ->columnSpanFull()
+                        ->visible(fn ($record) => !empty($record->conference->bank_account_address)),
+                        
+                    \Filament\Infolists\Components\TextEntry::make('conference.postal_address')
+                        ->label('Organization Address')
+                        ->columnSpanFull()
+                        ->visible(fn ($record) => !empty($record->conference->postal_address)),
+                        
+                ])
+                ->columns(3)
+                ->visible(fn ($record) => $record->status === \App\Enums\SubmissionStatus::Accepted),
                     // SECTION STATUS PEMBAYARAN (Jika sudah upload)
                 \Filament\Infolists\Components\Section::make(__('Status Pembayaran'))
                     ->schema([

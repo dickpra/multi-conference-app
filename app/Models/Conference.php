@@ -11,6 +11,10 @@ class Conference extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'sdgs' => 'array',
+    ];
+
 
     public function users()
     {
