@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Conference;
 use Illuminate\Http\Request;
-
+use App\Models\DashboardSetting;
 class PublicController extends Controller
 {
 
@@ -45,11 +45,14 @@ class PublicController extends Controller
                             ->orderBy('year', 'desc')
                             ->pluck('year');
 
+        $settings = DashboardSetting::firstOrCreate([]);
+
         // 6. Kirim semua data ke view
         return view('public.index', [
             'activeConfs' => $activeConfs,
             'pastConfs' => $pastConfs,
             'years' => $years,
+            'settings' => $settings,
         ]);
     }
 

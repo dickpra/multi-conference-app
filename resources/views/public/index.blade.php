@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Conferex — Conference & Paper Hub</title>
+    <title>Sustaincon — Conference & Paper Hub</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,9 +32,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center">
-                    <a href="{{ url('/') }}" class="flex items-center" aria-label="Conferex Homepage">
+                    <a href="{{ url('/') }}" class="flex items-center" aria-label="Sustaincon Homepage">
                         <i data-feather="book-open" class="text-indigo-600"></i>
-                        <span class="ml-2 text-xl font-extrabold text-gray-900">Conferex</span>
+                        <span class="ml-2 text-xl font-extrabold text-gray-900">Sustaincon</span>
                     </a>
                     <div class="hidden sm:flex sm:space-x-8 sm:ml-8">
                         <a href="#upcoming" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Active Conferences</a>
@@ -69,8 +69,10 @@
     <header class="relative">
         <div class="bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 animated-bg text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">Discover & Attend Academic Conferences</h1>
-                <p class="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-indigo-100">Explore active conferences, archives of previous events, and submit your best paper.</p>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
+                    {{ $settings->hero_title ?? 'Temukan & Ikuti Konferensi Akademik' }}
+                </h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-indigo-100">{{ $settings->hero_description ?? 'Jelajahi konferensi aktif, arsip acara sebelumnya, dan kirimkan makalah terbaik Anda.' }}</p>
                 <div class="mt-10 flex justify-center gap-4">
                     <a href="#upcoming" class="bg-white text-indigo-700 px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">Explore Conferences</a>
                     <a href="{{ route('filament.author.pages.dashboard') }}" class="border-2 border-white text-white px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-semibold hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">Submit Paper</a>
@@ -219,6 +221,163 @@
 
             </div>
         </section>
+        <section class="border-t border-gray-200">
+
+            @if($settings?->about_me)
+    <section id="about" class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center">
+                <span class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700 uppercase tracking-wide">
+                    <i data-feather="info" class="w-3 h-3 mr-1.5"></i>
+                    About Sustaincon
+                </span>
+                <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold text-gray-900">
+                    {{ __('Built for sustainable, impactful conferences') }}
+                </h2>
+                <p class="mt-3 text-base sm:text-lg text-gray-600">
+                    {{ __('Use Sustaincon as your hub to discover, manage, and publish research in sustainability-focused events.') }}
+                </p>
+            </div>
+
+            <div class="mt-10 grid lg:grid-cols-3 gap-8 items-start">
+                <div class="lg:col-span-1">
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 h-full flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-indigo-900 mb-2">
+                                {{ __('Why Sustaincon?') }}
+                            </h3>
+                            <p class="text-sm text-indigo-900/80">
+                                {{ __('A curated environment that puts sustainability, accessibility, and academic rigor at the center of every event.') }}
+                            </p>
+                        </div>
+                        <ul class="mt-6 space-y-2 text-sm text-indigo-900/80">
+                            <li class="flex items-center">
+                                <span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/10 text-emerald-600 items-center justify-center mr-2">
+                                    <i data-feather="check" class="w-3 h-3"></i>
+                                </span>
+                                {{ __('Track conferences over time') }}
+                            </li>
+                            <li class="flex items-center">
+                                <span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/10 text-emerald-600 items-center justify-center mr-2">
+                                    <i data-feather="check" class="w-3 h-3"></i>
+                                </span>
+                                {{ __('Highlight sustainability themes') }}
+                            </li>
+                            <li class="flex items-center">
+                                <span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/10 text-emerald-600 items-center justify-center mr-2">
+                                    <i data-feather="check" class="w-3 h-3"></i>
+                                </span>
+                                {{ __('Connect authors, reviewers, and organizers') }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
+                        <div class="space-y-4 prose max-w-none">
+                            <x-content-blocks :blocks="$settings->about_me" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endif
+
+
+            @if($settings?->guidebook)
+    <section id="guidebook" class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center">
+                <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-xs font-semibold text-emerald-700 uppercase tracking-wide">
+                    <i data-feather="book-open" class="w-3 h-3 mr-1.5"></i>
+                    Guidebook & Resources
+                </span>
+                <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold text-gray-900">
+                    {{ __('Navigate your submission with confidence') }}
+                </h2>
+                <p class="mt-3 text-base sm:text-lg text-gray-600">
+                    {{ __('All key information, templates, and instructions curated in one place.') }}
+                </p>
+            </div>
+
+            <div class="mt-10 grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-2">
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
+                        <x-content-blocks :blocks="$settings->guidebook" />
+                    </div>
+                </div>
+
+                <div class="md:col-span-1">
+                    <div class="h-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl p-6 flex flex-col justify-between shadow-lg">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">
+                                {{ __('Need a quick start?') }}
+                            </h3>
+                            <p class="text-sm text-indigo-100">
+                                {{ __('Check if your conference provides templates, formatting rules, and ethical guidelines directly in this guidebook section.') }}
+                            </p>
+                        </div>
+                        <div class="mt-6 space-y-2 text-sm text-indigo-100">
+                            <div class="flex items-center">
+                                <i data-feather="file-text" class="w-4 h-4 mr-2"></i>
+                                {{ __('Download templates from each conference page') }}
+                            </div>
+                            <div class="flex items-center">
+                                <i data-feather="shield" class="w-4 h-4 mr-2"></i>
+                                {{ __('Follow ethical and review processes') }}
+                            </div>
+                            <div class="flex items-center">
+                                <i data-feather="help-circle" class="w-4 h-4 mr-2"></i>
+                                {{ __('Reach out to organizers if something is unclear') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endif
+
+@if(!empty($settings->credit))
+    <section id="credit"
+             class="py-12 bg-gradient-to-r from-gray-50 via-white to-gray-50 border-t border-gray-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{-- Header kecil di atas konten --}}
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700 tracking-wide uppercase">
+                        <i data-feather="heart" class="w-3 h-3 mr-1.5"></i>
+                        Credits & Partners
+                    </span>
+                    <h2 class="mt-3 text-2xl sm:text-3xl font-bold text-gray-900">
+                        {{ __('Recognizing the people behind Sustaincon') }}
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 max-w-xl">
+                        {{ __('Organizing institutions, sponsors, and supporting teams who make these conferences possible.') }}
+                    </p>
+                </div>
+
+                <div class="hidden sm:flex items-center gap-2 text-xs text-gray-500">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                        <i data-feather="users" class="w-4 h-4 text-indigo-600"></i>
+                    </span>
+                    <span>{{ __('Updated by conference admins through the Sustaincon dashboard.') }}</span>
+                </div>
+            </div>
+
+            {{-- Card utama berisi konten dari Filament Builder --}}
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm px-5 sm:px-8 py-6 sm:py-8">
+                <div class="prose prose-sm sm:prose-base max-w-none text-gray-700">
+                    <x-content-blocks :blocks="$settings->credit" />
+                </div>
+            </div>
+        </div>
+    </section>
+@endif
+
+        </section>
 
         <section class="bg-indigo-700">
             <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 lg:py-20">
@@ -299,16 +458,41 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
-                    <ul class="mt-4 space-y-4">
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Twitter</a></li>
-                        <li><a href="#" class="text-base text-gray-300 hover:text-white">LinkedIn</a></li>
-                    </ul>
+    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
+    <ul class="mt-4 space-y-4">
+        @if(!empty($settings?->contact_email))
+            <li class="flex items-center space-x-3">
+                <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-800">
+                    <i data-feather="mail" class="text-gray-300 h-4 w-4"></i>
+                </span>
+                <div class="flex flex-col">
+                    <span class="text-xs uppercase tracking-wide text-gray-400">Email</span>
+                    <a href="mailto:{{ $settings->contact_email }}" class="text-sm text-gray-300 hover:text-white">
+                        {{ $settings->contact_email }}
+                    </a>
                 </div>
+            </li>
+        @endif
+
+        @if(!empty($settings?->contact_phone))
+            <li class="flex items-center space-x-3">
+                <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-800">
+                    <i data-feather="phone" class="text-gray-300 h-4 w-4"></i>
+                </span>
+                <div class="flex flex-col">
+                    <span class="text-xs uppercase tracking-wide text-gray-400">Phone / WhatsApp</span>
+                    <a href="tel:{{ $settings->contact_phone }}" class="text-sm text-gray-300 hover:text-white">
+                        {{ $settings->contact_phone }}
+                    </a>
+                </div>
+            </li>
+        @endif
+    </ul>
+</div>
+
             </div>
             <div class="mt-12 border-t border-gray-800 pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <p class="text-base text-gray-400">&copy; {{ date('Y') }} Conferex. All rights reserved.</p>
+                <p class="text-base text-gray-400">&copy; {{ date('Y') }} Sustaincon. All rights reserved.</p>
                 <div class="flex space-x-6">
                     <a href="#" class="text-gray-400 hover:text-white"><i data-feather="twitter"></i></a>
                     <a href="#" class="text-gray-400 hover:text-white"><i data-feather="linkedin"></i></a>

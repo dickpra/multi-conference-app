@@ -40,7 +40,8 @@ class ConferenceResource extends Resource
                 DatePicker::make('start_date')->required(),
                 DatePicker::make('end_date')->required(),
                 FileUpload::make('logo')->image()->directory('logos'),
-                TextInput::make('isbn_issn'),
+                TextInput::make('isbn_issn')
+                    ->label('ISBN/ISSN')
             ]);
     }
 
