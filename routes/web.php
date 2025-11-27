@@ -36,6 +36,8 @@ Route::get('/conference/{conference:slug}', [PublicController::class, 'show'])->
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
 
+Route::post('/conference/{conference}/attend', [PublicController::class, 'registerAttendee'])->name('conference.attend');
+
 Route::fallback(function () {
     return redirect()->to(url()->previous());
 });

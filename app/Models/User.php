@@ -146,5 +146,11 @@ class User extends Authenticatable implements HasTenants
         return $this->hasMany(Submission::class);
     }
 
+    
+    // app/Models/User.php
+    public function attendances()
+    {
+        return $this->hasMany(Attendee::class);
+    }
 
 }

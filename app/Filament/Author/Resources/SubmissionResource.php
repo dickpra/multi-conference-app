@@ -28,7 +28,7 @@ class SubmissionResource extends Resource
     }
     public static function getPluralModelLabel(): string
     {
-        return 'Submissions';
+        return 'Submissions Paper';
     }
 
 

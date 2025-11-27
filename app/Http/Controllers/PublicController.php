@@ -65,4 +65,38 @@ class PublicController extends Controller
         // Kirim data conference ke view
         return view('public.conference-show', compact('conference'));
     }
+
+    // app/Http/Controllers/PublicController.php
+
+    public function registerAttendee(Conference $conference)
+    {
+        // Pastikan user login
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        // Cek apakah sudah terdaftar
+        $exists = \App\Models\Attendee::where('user_id', auth()->id())
+            ->where('conference_id', $conference->id)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->route('filament.author.pages.dashboard')
+                ->with('error', 'Anda sudah terdaftar sebagai peserta.');
+        }
+
+        // Buat data Attendee baru
+        \App\Models\Attendee::create([
+            'user_id' => auth()->id(),
+            'conference_id' => $conference->id,
+            'status' => 'pending', // Belum bayar
+            // Generate Invoice Number di sini atau nanti
+        ]);
+
+        // Tambahkan role di tabel pivot (opsional, tapi bagus untuk konsistensi)
+        $conference->users()->attach(auth()->id(), ['role' => \App\Enums\ConferenceRole::Participant]);
+
+        return redirect()->route('filament.author.pages.dashboard')
+            ->with('success', 'Berhasil mendaftar sebagai peserta! Silakan lakukan pembayaran.');
+    }
 }

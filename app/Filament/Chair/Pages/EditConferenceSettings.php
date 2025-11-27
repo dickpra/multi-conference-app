@@ -88,11 +88,22 @@ class EditConferenceSettings extends Page implements HasForms
                 Section::make(__('Informasi Pembayaran & Rekening (Internasional)'))
                     ->description(__('Lengkapi data ini untuk memudahkan pembayaran dari dalam dan luar negeri.'))
                     ->schema([
-                        TextInput::make('registration_fee')
-                            ->label(__('Biaya Pendaftaran (Rp)'))
-                            ->numeric()
-                            ->prefix('Rp')
-                            ->required(),
+                        \Filament\Forms\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Forms\Components\TextInput::make('registration_fee')
+                                    ->label(__('Biaya Pendaftaran Author (Presenter)'))
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->required(),
+
+                                // INPUT BARU UNTUK PARTICIPANT
+                                \Filament\Forms\Components\TextInput::make('participant_fee')
+                                    ->label(__('Biaya Pendaftaran Participant (Listener)'))
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->helperText(__('Kosongkan jika gratis'))
+                                    ->required(),
+                            ]),
 
                         // --- DETAIL ORGANISASI ---
                         Grid::make(2)

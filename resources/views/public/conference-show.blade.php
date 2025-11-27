@@ -81,6 +81,7 @@
         @endif
             {{-- --- BATAS AKHIR --- --}}
         </div>
+        
     </header>
 
     <main class="py-12">
@@ -137,6 +138,7 @@
                         @endif
                     </ul>
                 </div>
+                
 
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     @if($conference->book_of_abstracts_path)
